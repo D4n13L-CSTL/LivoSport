@@ -4,8 +4,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Club de Voleibol</title>
     <link rel="stylesheet" href="../static/Css/style.css">
+    <link rel="stylesheet" href="../static/Css/partial/panel.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
 </head>
     <div class="dashboard-container">
         <!-- Sidebar -->
@@ -53,10 +55,13 @@
                 </li>
             
                 <li class="menu-item">
-                        <i class="fas fa-sign-out-alt"></i>
-                        <button id="logoutBtn"> <span>Cerrar Sesión</span> </button>
+                         <button id="logoutBtn">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>Cerrar Sesión</span>
+                        </button>
                 </li>
 
             </ul>
         </aside>
 <script src="{{ url_for('static', filename='JS/logout.js') }}"></script>
+<script src="{{ url_for('static', filename='JS/partial/base.js') }}"></script>

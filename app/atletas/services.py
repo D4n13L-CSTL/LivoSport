@@ -60,7 +60,10 @@ class ServiceRegistrarAtletas:
         informacion_deportiva = self.atletasDBO.registro_informacion_deportiva(categoria,posicion,dorsal,fecha_ingreso,estatura,peso, mano_dominante,exp_previa, atleta)
         return 
     
+    def aleta_update(self,id_atleta, datos):
+        
 
+        return self.atletasDBO.update_atleta(id_atleta, datos)
 
 
 

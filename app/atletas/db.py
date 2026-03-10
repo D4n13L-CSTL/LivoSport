@@ -102,7 +102,21 @@ class RegistraAtleta(WriteDAO):
             """
         return self.execute(sql_insert_atleta_detalles,(categoria,posicion,dorsal,fecha_ingreso,estatura,peso, mano_dominante,  exp_previa, id_atleta))
 
-    
+    def update_atleta(self,id_atleta, datos):
+        columnas = [f"{key} = %s" for key in datos.keys()]
+        set_query = ", ".join(columnas)
+        print(set_query)
+        valores = list(datos.values())
+        valores.append(id_atleta)
+        print(valores)
+        sql = f"UPDATE atletas SET {set_query} WHERE id = %s"
+        self.execute(sql,tuple(valores))
+
+        sql2 = f"UPDATE atletas SET {set_query} WHERE id = %s"
+
+        
+
+
 class ObtenerAtletas(BaseDAO):
 
     def atletas_generales(self):

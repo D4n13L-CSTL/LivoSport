@@ -127,8 +127,13 @@ class CrudRegistroAtleta(Resource):
         
 
         return make_response(jsonify({"Prueba":"PRUEBA"}))
-    
 
+    def put(self):
+        #datos = {"nombre": 'pepepere'}
+        datos = api.payload
+        print(datos)
+        crud_atleta.aleta_update(1, datos)
+        return {"test":"test"}
 
 @api.route('/obtener_atletas')
 class ObtenerAtletas(Resource):

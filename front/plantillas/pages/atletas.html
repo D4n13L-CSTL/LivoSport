@@ -13,11 +13,10 @@
     
 </head>
 <body>
+    {% include "partials/panel.html" %}
     <div class="dashboard-container">
         <!-- Sidebar -->
-        <aside class="sidebar">
-              {% include "partials/panel.html" %}
-        </aside>
+    
         
         <!-- Contenido Principal -->
         <main class="main-content">
@@ -200,51 +199,7 @@
                         </div>
                     </div>
                     
-                    <!-- Cumpleaños Próximos -->
-                    <div class="upcoming-birthdays">
-                        <h3>Cumpleaños Próximos</h3>
-                        <div class="birthday-list">
-                            <div class="birthday-item">
-                                <div class="birthday-date">
-                                    <span class="birthday-day">25</span>
-                                    <span class="birthday-month">Oct</span>
-                                </div>
-                                <div class="birthday-info">
-                                    <h4>Ana García</h4>
-                                    <p>Equipo Principal</p>
-                                </div>
-                                <button class="btn-icon small" title="Enviar saludo">
-                                    <i class="fas fa-gift"></i>
-                                </button>
-                            </div>
-                            <div class="birthday-item">
-                                <div class="birthday-date">
-                                    <span class="birthday-day">28</span>
-                                    <span class="birthday-month">Oct</span>
-                                </div>
-                                <div class="birthday-info">
-                                    <h4>Carlos López</h4>
-                                    <p>Sub-21</p>
-                                </div>
-                                <button class="btn-icon small" title="Enviar saludo">
-                                    <i class="fas fa-gift"></i>
-                                </button>
-                            </div>
-                            <div class="birthday-item">
-                                <div class="birthday-date">
-                                    <span class="birthday-day">02</span>
-                                    <span class="birthday-month">Nov</span>
-                                </div>
-                                <div class="birthday-info">
-                                    <h4>María Rodríguez</h4>
-                                    <p>Femenino</p>
-                                </div>
-                                <button class="btn-icon small" title="Enviar saludo">
-                                    <i class="fas fa-gift"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+
                 </div>
             </div>
         </main>
@@ -520,7 +475,7 @@
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
-    <script src="../js/dashboard.js"></script>
+    <script src="{{ url_for('static', filename='JS/dashboard.js') }}"></script>
     <script src="../../static/JS/atletas.js"></script>
     <script src="../../static/JS/estadisticas_atletas.js"></script>
 </body>

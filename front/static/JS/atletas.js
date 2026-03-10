@@ -32,7 +32,7 @@ async function fetchAndMapAthletes() {
             medicalConditions: atleta.condiciones,
             medications: atleta.medicamentos,
             medicalInsurance: true,
-            status: "active",
+            status: atleta.activo,
             avatarColor: "#3b82f6"
         }));
     } catch (error) {
@@ -319,11 +319,11 @@ console.log("Atletas listos para la interfaz:", athletes);
             // Estado
             let statusClass, statusText;
             switch(athlete.status) {
-                case 'active':
+                case true:
                     statusClass = 'status-paid';
                     statusText = 'Activo';
                     break;
-                case 'inactive':
+                case false :
                     statusClass = 'status-pending';
                     statusText = 'Inactivo';
                     break;
@@ -878,6 +878,9 @@ console.log("Atletas listos para la interfaz:", athletes);
         profileModal.classList.remove('active');
         
         // Llenar formulario con datos del atleta
+        
+        document.getElementById('username').value = athlete.username;
+        document.getElementById('password').value = athlete.password;
         document.getElementById('firstName').value = athlete.firstName;
         document.getElementById('lastName').value = athlete.lastName;
         document.getElementById('documentType').value = athlete.documentType;
