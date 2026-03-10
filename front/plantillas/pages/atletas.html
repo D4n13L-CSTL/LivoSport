@@ -50,7 +50,7 @@
                             <i class="fas fa-users"></i>
                         </div>
                         <div class="stat-info">
-                            <h3>24</h3>
+                            <h3 id="totalAtletas">0</h3>
                             <p>Atletas Activos</p>
                         </div>
                     </div>
@@ -60,7 +60,7 @@
                             <i class="fas fa-user-check"></i>
                         </div>
                         <div class="stat-info">
-                            <h3>18</h3>
+                            <h3 id="atletasPagos">0</h3>
                             <p>Al Día con Pagos</p>
                         </div>
                     </div>
@@ -70,7 +70,7 @@
                             <i class="fas fa-venus"></i>
                         </div>
                         <div class="stat-info">
-                            <h3>14</h3>
+                            <h3 id="atletasMujeres">0</h3>
                             <p>Atletas Femeninas</p>
                         </div>
                     </div>
@@ -80,7 +80,7 @@
                             <i class="fas fa-mars"></i>
                         </div>
                         <div class="stat-info">
-                            <h3>10</h3>
+                            <h3 id="atletasHombres">0</h3>
                             <p>Atletas Masculinos</p>
                         </div>
                     </div>
@@ -175,52 +175,27 @@
                 <div class="side-panel">
                     <!-- Estadísticas Rápidas -->
                     <div class="quick-stats">
-                        <h3>Distribución por Edad</h3>
-                        <div class="age-groups">
-                            <div class="age-group">
-                                <span class="age-label">15-17 años</span>
-                                <div class="age-bar">
-                                    <div class="age-fill" style="width: 30%"></div>
-                                </div>
-                                <span class="age-count">8</span>
-                            </div>
-                            <div class="age-group">
-                                <span class="age-label">18-20 años</span>
-                                <div class="age-bar">
-                                    <div class="age-fill" style="width: 45%"></div>
-                                </div>
-                                <span class="age-count">12</span>
-                            </div>
-                            <div class="age-group">
-                                <span class="age-label">21+ años</span>
-                                <div class="age-bar">
-                                    <div class="age-fill" style="width: 25%"></div>
-                                </div>
-                                <span class="age-count">4</span>
-                            </div>
-                        </div>
-                        
                         <h3 style="margin-top: 1.5rem;">Posiciones Principales</h3>
                         <div class="positions-list">
                             <div class="position-item">
                                 <span class="position-name">Armador</span>
-                                <span class="position-count">4</span>
+                                <span class="position-count" id="count-armador">0</span>
                             </div>
                             <div class="position-item">
                                 <span class="position-name">Opuesto</span>
-                                <span class="position-count">3</span>
+                                <span class="position-count" id="count-opuesto">0</span>
                             </div>
                             <div class="position-item">
                                 <span class="position-name">Central</span>
-                                <span class="position-count">6</span>
+                                <span class="position-count" id="count-central">0</span>
                             </div>
                             <div class="position-item">
                                 <span class="position-name">Libero</span>
-                                <span class="position-count">3</span>
+                                <span class="position-count" id="count-libero">0</span>
                             </div>
                             <div class="position-item">
-                                <span class="position-name">Externo</span>
-                                <span class="position-count">8</span>
+                                <span class="position-name">Atacante/Externo</span>
+                                <span class="position-count" id="count-atacante">0</span>
                             </div>
                         </div>
                     </div>
@@ -270,34 +245,13 @@
                             </div>
                         </div>
                     </div>
-                    
-                    <!-- Acciones Rápidas -->
-                    <div class="quick-actions-panel">
-                        <h3>Acciones Rápidas</h3>
-                        <button class="quick-action-btn">
-                            <i class="fas fa-file-medical"></i>
-                            <span>Registrar Examen Médico</span>
-                        </button>
-                        <button class="quick-action-btn">
-                            <i class="fas fa-chart-line"></i>
-                            <span>Ver Estadísticas</span>
-                        </button>
-                        <button class="quick-action-btn">
-                            <i class="fas fa-envelope"></i>
-                            <span>Enviar Comunicado</span>
-                        </button>
-                        <button class="quick-action-btn">
-                            <i class="fas fa-file-pdf"></i>
-                            <span>Generar Reporte</span>
-                        </button>
-                    </div>
                 </div>
             </div>
         </main>
     </div>
     
     <!-- Modal para Nuevo Atleta -->
-    <div class="modal" id="athleteModal">
+    <div class="modal" id="athleteModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
         <div class="modal-content wide">
             <div class="modal-header">
                 <h3 id="modalTitle">Nuevo Atleta</h3>
@@ -568,5 +522,6 @@
     <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
     <script src="../js/dashboard.js"></script>
     <script src="../../static/JS/atletas.js"></script>
+    <script src="../../static/JS/estadisticas_atletas.js"></script>
 </body>
 </html>

@@ -143,7 +143,6 @@ console.log("Atletas listos para la interfaz:", athletes);
     // Cerrar modales al hacer clic fuera
     athleteModal.addEventListener('click', (e) => {
         if (e.target === athleteModal) {
-            athleteModal.classList.remove('active');
             document.body.style.overflow = 'auto';
             athleteForm.reset();
         }
