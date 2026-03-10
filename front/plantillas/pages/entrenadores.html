@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Entrenadores - Club de Voleibol</title>
+    <link rel="stylesheet" href="../../static/Css/style.css">
+    <link rel="stylesheet" href="../../static/Css/components.css">
+    <link rel="stylesheet" href="../../static/Css/entrenadores.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            {% include "partials/panel.html" %}
+        </aside>
+        
+        <!-- Contenido Principal -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="header">
+                <div class="header-left">
+                    <h1>Gestión de Entrenadores</h1>
+                </div>
+                <div class="header-right">
+                    <div class="notification-icon">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge">1</span>
+                    </div>
+                    <div class="user-profile">
+                        <div class="avatar">AJ</div>
+                        <div class="user-info">
+                            <h4>Admin User</h4>
+                            <p>Administrador</p>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- Área de Contenido -->
+            <div class="content-area">
+                <!-- Panel de Estadísticas -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background-color: #3b82f6;">
+                            <i class="fas fa-user-tie"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>8</h3>
+                            <p>Entrenadores Activos</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background-color: #10b981;">
+                            <i class="fas fa-graduation-cap"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>5</h3>
+                            <p>Certificados Nacionales</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background-color: #8b5cf6;">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>3</h3>
+                            <p>Entrenadores Senior</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background-color: #f59e0b;">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>24</h3>
+                            <p>Horas Semanales</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Panel Principal -->
+                <div class="content-panel">
+                    <div class="panel-header">
+                        <h2>Lista de Entrenadores</h2>
+                        <button class="btn-primary" id="addCoachBtn">
+                            <i class="fas fa-user-plus"></i> Nuevo Entrenador
+                        </button>
+                    </div>
+                    
+                    <!-- Filtros y Búsqueda -->
+                    <div class="filters-section">
+                        <div class="filter-group">
+                            <label for="filterSpecialty">Especialidad:</label>
+                            <select id="filterSpecialty" class="filter-select">
+                                <option value="all">Todas las especialidades</option>
+                                <option value="technique">Técnica</option>
+                                <option value="tactics">Táctica</option>
+                                <option value="physical">Preparación Física</option>
+                                <option value="mental">Preparación Mental</option>
+                                <option value="goalkeeper">Especialista en Liberos</option>
+                            </select>
+                        </div>
+                        
+                        <div class="filter-group">
+                            <label for="filterLevel">Nivel:</label>
+                            <select id="filterLevel" class="filter-select">
+                                <option value="all">Todos los niveles</option>
+                                <option value="junior">Junior</option>
+                                <option value="senior">Senior</option>
+                                <option value="head">Jefe de Equipo</option>
+                                <option value="coordinator">Coordinador</option>
+                            </select>
+                        </div>
+                        
+                        <div class="filter-group">
+                            <label for="filterStatus">Estado:</label>
+                            <select id="filterStatus" class="filter-select">
+                                <option value="all">Todos</option>
+                                <option value="active">Activo</option>
+                                <option value="inactive">Inactivo</option>
+                                <option value="vacation">Vacaciones</option>
+                                <option value="sick">Enfermedad</option>
+                            </select>
+                        </div>
+                        
+                        <div class="filter-group">
+                            <label for="searchCoach">Buscar:</label>
+                            <div class="search-input">
+                                <i class="fas fa-search"></i>
+                                <input type="text" id="searchCoach" placeholder="Nombre, apellido o documento">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Tarjetas de Entrenadores -->
+                    <div class="coaches-grid" id="coachesGrid">
+                        <!-- Las tarjetas se cargarán con JavaScript -->
+                    </div>
+                </div>
+                
+                <!-- Panel Lateral -->
+                <div class="side-panel">
+                    <!-- Próximas Certificaciones -->
+                    <div class="certifications-panel">
+                        <h3>Próximas Certificaciones</h3>
+                        <div class="certifications-list">
+                            <div class="certification-item">
+                                <div class="certification-date">
+                                    <span class="certification-day">15</span>
+                                    <span class="certification-month">Nov</span>
+                                </div>
+                                <div class="certification-info">
+                                    <h4>Curso de Táctica Avanzada</h4>
+                                    <p class="certification-coach">Carlos López</p>
+                                    <p class="certification-location">Federación Nacional</p>
+                                </div>
+                                <span class="certification-status pending">Pendiente</span>
+                            </div>
+                            
+                            <div class="certification-item">
+                                <div class="certification-date">
+                                    <span class="certification-day">30</span>
+                                    <span class="certification-month">Nov</span>
+                                </div>
+                                <div class="certification-info">
+                                    <h4>Renovación Licencia Nivel II</h4>
+                                    <p class="certification-coach">Ana García</p>
+                                    <p class="certification-location">Online</p>
+                                </div>
+                                <span class="certification-status in-progress">En Proceso</span>
+                            </div>
+                            
+                            <div class="certification-item">
+                                <div class="certification-date">
+                                    <span class="certification-day">10</span>
+                                    <span class="certification-month">Dic</span>
+                                </div>
+                                <div class="certification-info">
+                                    <h4>Certificación Preparación Física</h4>
+                                    <p class="certification-coach">María Rodríguez</p>
+                                    <p class="certification-location">Instituto del Deporte</p>
+                                </div>
+                                <span class="certification-status confirmed">Confirmada</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Equipos Asignados -->
+                    <div class="teams-panel">
+                        <h3>Distribución de Equipos</h3>
+                        <div class="teams-list">
+                            <div class="team-assignment">
+                                <div class="team-info">
+                                    <h4>Equipo Principal</h4>
+                                    <p>Carlos López (Jefe)</p>
+                                </div>
+                                <div class="team-assistants">
+                                    <span class="assistant-count">2 asistentes</span>
+                                </div>
+                            </div>
+                            
+                            <div class="team-assignment">
+                                <div class="team-info">
+                                    <h4>Sub-21</h4>
+                                    <p>María Rodríguez</p>
+                                </div>
+                                <div class="team-assistants">
+                                    <span class="assistant-count">1 asistente</span>
+                                </div>
+                            </div>
+                            
+                            <div class="team-assignment">
+                                <div class="team-info">
+                                    <h4>Femenino</h4>
+                                    <p>Ana García</p>
+                                </div>
+                                <div class="team-assistants">
+                                    <span class="assistant-count">1 asistente</span>
+                                </div>
+                            </div>
+                            
+                            <div class="team-assignment">
+                                <div class="team-info">
+                                    <h4>Sub-18</h4>
+                                    <p>Javier Pérez</p>
+                                </div>
+                                <div class="team-assistants">
+                                    <span class="assistant-count">0 asistentes</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Horarios Disponibles -->
+                    <div class="availability-panel">
+                        <h3>Disponibilidad Esta Semana</h3>
+                        <div class="availability-chart">
+                            <div class="availability-day">
+                                <span class="day-name">Lun</span>
+                                <div class="availability-bar">
+                                    <div class="availability-fill" style="width: 80%"></div>
+                                </div>
+                            </div>
+                            <div class="availability-day">
+                                <span class="day-name">Mar</span>
+                                <div class="availability-bar">
+                                    <div class="availability-fill" style="width: 100%"></div>
+                                </div>
+                            </div>
+                            <div class="availability-day">
+                                <span class="day-name">Mié</span>
+                                <div class="availability-bar">
+                                    <div class="availability-fill" style="width: 60%"></div>
+                                </div>
+                            </div>
+                            <div class="availability-day">
+                                <span class="day-name">Jue</span>
+                                <div class="availability-bar">
+                                    <div class="availability-fill" style="width: 90%"></div>
+                                </div>
+                            </div>
+                            <div class="availability-day">
+                                <span class="day-name">Vie</span>
+                                <div class="availability-bar">
+                                    <div class="availability-fill" style="width: 70%"></div>
+                                </div>
+                            </div>
+                            <div class="availability-day">
+                                <span class="day-name">Sáb</span>
+                                <div class="availability-bar">
+                                    <div class="availability-fill" style="width: 50%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="availability-note">Porcentaje de entrenadores disponibles por día</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Modal para Nuevo Entrenador -->
+    <div class="modal" id="coachModal">
+        <div class="modal-content wide">
+            <div class="modal-header">
+                <h3 id="modalTitle">Nuevo Entrenador</h3>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="coachForm">
+                    <!-- Pestañas del formulario -->
+                    <div class="form-tabs">
+                        <button type="button" class="form-tab active" data-tab="basic">Información Básica</button>
+                        <button type="button" class="form-tab" data-tab="professional">Información Profesional</button>
+                        <button type="button" class="form-tab" data-tab="certifications">Certificaciones</button>
+                        <button type="button" class="form-tab" data-tab="availability">Disponibilidad</button>
+                    </div>
+                    
+                    <!-- Contenido de pestañas -->
+                    <div class="tab-content active" id="basicTab">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="firstName">Nombre *</label>
+                                <input type="text" id="firstName" placeholder="Ej: Carlos" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="lastName">Apellido *</label>
+                                <input type="text" id="lastName" placeholder="Ej: López" required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="documentType">Tipo de Documento *</label>
+                                <select id="documentType" required>
+                                    <option value="">Seleccionar...</option>
+                                    <option value="dni">DNI</option>
+                                    <option value="passport">Pasaporte</option>
+                                    <option value="ce">Carnet de Extranjería</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="documentNumber">Número de Documento *</label>
+                                <input type="text" id="documentNumber" placeholder="Ej: 12345678" required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="birthDate">Fecha de Nacimiento *</label>
+                                <input type="text" id="birthDate" class="datepicker" placeholder="Seleccionar fecha" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="gender">Género *</label>
+                                <select id="gender" required>
+                                    <option value="">Seleccionar...</option>
+                                    <option value="male">Masculino</option>
+                                    <option value="female">Femenino</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="email">Correo Electrónico *</label>
+                                <input type="email" id="email" placeholder="Ej: carlos.lopez@club.com" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="phone">Teléfono *</label>
+                                <input type="tel" id="phone" placeholder="Ej: +51 987654321" required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="address">Dirección</label>
+                            <input type="text" id="address" placeholder="Dirección completa">
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="emergencyContact">Contacto de Emergencia</label>
+                                <input type="text" id="emergencyContact" placeholder="Nombre completo">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="emergencyPhone">Teléfono de Emergencia</label>
+                                <input type="tel" id="emergencyPhone" placeholder="Ej: +51 987654321">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="tab-content" id="professionalTab">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="specialty">Especialidad Principal *</label>
+                                <select id="specialty" required>
+                                    <option value="">Seleccionar especialidad...</option>
+                                    <option value="technique">Técnica</option>
+                                    <option value="tactics">Táctica</option>
+                                    <option value="physical">Preparación Física</option>
+                                    <option value="mental">Preparación Mental</option>
+                                    <option value="goalkeeper">Especialista en Liberos</option>
+                                    <option value="general">Entrenador General</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="level">Nivel *</label>
+                                <select id="level" required>
+                                    <option value="">Seleccionar nivel...</option>
+                                    <option value="junior">Junior</option>
+                                    <option value="senior">Senior</option>
+                                    <option value="head">Jefe de Equipo</option>
+                                    <option value="coordinator">Coordinador</option>
+                                    <option value="director">Director Técnico</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="hireDate">Fecha de Contratación *</label>
+                                <input type="text" id="hireDate" class="datepicker" placeholder="Seleccionar fecha" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="contractType">Tipo de Contrato *</label>
+                                <select id="contractType" required>
+                                    <option value="">Seleccionar...</option>
+                                    <option value="full-time">Tiempo Completo</option>
+                                    <option value="part-time">Medio Tiempo</option>
+                                    <option value="hourly">Por Hora</option>
+                                    <option value="seasonal">Temporal</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="salary">Salario (mensual)</label>
+                                <div class="input-with-prefix">
+                                    <span>$</span>
+                                    <input type="number" id="salary" placeholder="0.00" step="0.01" min="0">
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="weeklyHours">Horas Semanales *</label>
+                                <input type="number" id="weeklyHours" placeholder="Ej: 40" min="0" max="60" required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="experience">Años de Experiencia *</label>
+                            <input type="number" id="experience" placeholder="Ej: 5" min="0" max="50" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="previousTeams">Equipos Anteriores</label>
+                            <textarea id="previousTeams" rows="3" placeholder="Lista de equipos entrenados anteriormente..."></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="achievements">Logros y Reconocimientos</label>
+                            <textarea id="achievements" rows="3" placeholder="Premios, campeonatos, reconocimientos..."></textarea>
+                        </div>
+                    </div>
+                    
+                    <div class="tab-content" id="certificationsTab">
+                        <div class="form-group">
+                            <label for="licenseNumber">Número de Licencia</label>
+                            <input type="text" id="licenseNumber" placeholder="Número de licencia federativa">
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="licenseExpiration">Vencimiento de Licencia</label>
+                                <input type="text" id="licenseExpiration" class="datepicker" placeholder="Seleccionar fecha">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="certificationLevel">Nivel de Certificación</label>
+                                <select id="certificationLevel">
+                                    <option value="">Seleccionar...</option>
+                                    <option value="level1">Nivel 1 - Básico</option>
+                                    <option value="level2">Nivel 2 - Intermedio</option>
+                                    <option value="level3">Nivel 3 - Avanzado</option>
+                                    <option value="level4">Nivel 4 - Master</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Certificaciones Adicionales</label>
+                            <div class="certifications-container" id="certificationsList">
+                                <!-- Certificaciones se agregarán dinámicamente -->
+                            </div>
+                            <button type="button" class="btn-secondary" id="addCertificationBtn">
+                                <i class="fas fa-plus"></i> Agregar Certificación
+                            </button>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="courses">Cursos Realizados</label>
+                            <textarea id="courses" rows="3" placeholder="Cursos, seminarios, talleres realizados..."></textarea>
+                        </div>
+                    </div>
+                    
+                    <div class="tab-content" id="availabilityTab">
+                        <div class="form-group">
+                            <label>Disponibilidad Semanal</label>
+                            <div class="availability-options">
+                                <div class="availability-day-option">
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" name="availability" value="monday" checked>
+                                        <span class="checkmark"></span>
+                                        Lunes
+                                    </label>
+                                    <input type="text" class="time-input" placeholder="08:00-12:00" disabled>
+                                </div>
+                                <div class="availability-day-option">
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" name="availability" value="tuesday" checked>
+                                        <span class="checkmark"></span>
+                                        Martes
+                                    </label>
+                                    <input type="text" class="time-input" placeholder="08:00-12:00" disabled>
+                                </div>
+                                <div class="availability-day-option">
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" name="availability" value="wednesday" checked>
+                                        <span class="checkmark"></span>
+                                        Miércoles
+                                    </label>
+                                    <input type="text" class="time-input" placeholder="08:00-12:00" disabled>
+                                </div>
+                                <div class="availability-day-option">
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" name="availability" value="thursday" checked>
+                                        <span class="checkmark"></span>
+                                        Jueves
+                                    </label>
+                                    <input type="text" class="time-input" placeholder="08:00-12:00" disabled>
+                                </div>
+                                <div class="availability-day-option">
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" name="availability" value="friday" checked>
+                                        <span class="checkmark"></span>
+                                        Viernes
+                                    </label>
+                                    <input type="text" class="time-input" placeholder="08:00-12:00" disabled>
+                                </div>
+                                <div class="availability-day-option">
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" name="availability" value="saturday">
+                                        <span class="checkmark"></span>
+                                        Sábado
+                                    </label>
+                                    <input type="text" class="time-input" placeholder="09:00-13:00" disabled>
+                                </div>
+                                <div class="availability-day-option">
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" name="availability" value="sunday">
+                                        <span class="checkmark"></span>
+                                        Domingo
+                                    </label>
+                                    <input type="text" class="time-input" placeholder="09:00-13:00" disabled>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="notes">Notas sobre Disponibilidad</label>
+                            <textarea id="notes" rows="3" placeholder="Restricciones, preferencias, observaciones..."></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="availableForTravel">
+                                <span class="checkmark"></span>
+                                Disponible para viajes
+                            </label>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="availableWeekends">
+                                <span class="checkmark"></span>
+                                Disponible fines de semana
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="modal-actions">
+                        <button type="button" class="btn-secondary close-modal">Cancelar</button>
+                        <button type="submit" class="btn-primary">
+                            <i class="fas fa-save"></i> Guardar Entrenador
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal de Perfil de Entrenador -->
+    <div class="modal" id="profileModal">
+        <div class="modal-content wide">
+            <div class="modal-header">
+                <h3 id="profileTitle">Perfil del Entrenador</h3>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <!-- Contenido se carga dinámicamente -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
+    <script src="../../static/JS/dashboard.js"></script>
+    <script src="../../static/JS/entrenadores.js"></script>
+</body>
+</html>

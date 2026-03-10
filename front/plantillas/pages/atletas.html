@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Atletas - Club de Voleibol</title>
+    <link rel="stylesheet" href="../../static/Css/style.css">
+    <link rel="stylesheet" href="../../static/Css/components.css">
+    <link rel="stylesheet" href="../../static/Css/atletas.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+              {% include "partials/panel.html" %}
+        </aside>
+        
+        <!-- Contenido Principal -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="header">
+                <div class="header-left">
+                    <h1>Gestión de Atletas</h1>
+                </div>
+                <div class="header-right">
+                    <div class="notification-icon">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge">2</span>
+                    </div>
+                    <div class="user-profile">
+                        <div class="avatar">AJ</div>
+                        <div class="user-info">
+                            <h4>Admin User</h4>
+                            <p>Administrador</p>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- Área de Contenido -->
+            <div class="content-area">
+                <!-- Panel de Estadísticas -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background-color: #3b82f6;">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>24</h3>
+                            <p>Atletas Activos</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background-color: #10b981;">
+                            <i class="fas fa-user-check"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>18</h3>
+                            <p>Al Día con Pagos</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background-color: #8b5cf6;">
+                            <i class="fas fa-venus"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>14</h3>
+                            <p>Atletas Femeninas</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background-color: #f59e0b;">
+                            <i class="fas fa-mars"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>10</h3>
+                            <p>Atletas Masculinos</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Panel Principal -->
+                <div class="content-panel">
+                    <div class="panel-header">
+                        <h2>Lista de Atletas</h2>
+                        <button class="btn-primary" id="addAthleteBtn">
+                            <i class="fas fa-user-plus"></i> Nuevo Atleta
+                        </button>
+                    </div>
+                    
+                    <!-- Filtros y Búsqueda -->
+                    <div class="filters-section">
+                        <div class="filter-group">
+                            <label for="filterTeam">Equipo:</label>
+                            <select id="filterTeam" class="filter-select">
+                                <option value="all">Todos los equipos</option>
+                                <option value="sub18">Sub-18</option>
+                                <option value="sub21">Sub-21</option>
+                                <option value="principal">Equipo Principal</option>
+                                <option value="femenino">Femenino</option>
+                                <option value="juvenil">Juvenil</option>
+                            </select>
+                        </div>
+                        
+                        <div class="filter-group">
+                            <label for="filterStatus">Estado:</label>
+                            <select id="filterStatus" class="filter-select">
+                                <option value="all">Todos</option>
+                                <option value="active">Activo</option>
+                                <option value="inactive">Inactivo</option>
+                                <option value="injured">Lesionado</option>
+                                <option value="pending">Pendiente</option>
+                            </select>
+                        </div>
+                        
+                        <div class="filter-group">
+                            <label for="searchAthlete">Buscar:</label>
+                            <div class="search-input">
+                                <i class="fas fa-search"></i>
+                                <input type="text" id="searchAthlete" placeholder="Nombre, apellido o documento">
+                            </div>
+                        </div>
+                        
+                        <button class="btn-secondary" id="exportAthletes">
+                            <i class="fas fa-file-export"></i> Exportar
+                        </button>
+                    </div>
+                    
+                    <!-- Tabla de Atletas -->
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Atleta</th>
+                                    <th>Edad</th>
+                                    <th>Equipo</th>
+                                    <th>Posición</th>
+                                    <th>Contacto</th>
+                                    <th>Estado</th>
+                                    <th>Último Pago</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="athletesTableBody">
+                                <!-- Los datos se cargarán con JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Paginación -->
+                    <div class="pagination">
+                        <button class="pagination-btn" id="prevPage" disabled>
+                            <i class="fas fa-chevron-left"></i> Anterior
+                        </button>
+                        <div class="page-numbers">
+                            <span class="page-number active">1</span>
+                            <span class="page-number">2</span>
+                            <span class="page-number">3</span>
+                        </div>
+                        <button class="pagination-btn" id="nextPage">
+                            Siguiente <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Panel Lateral de Información -->
+                <div class="side-panel">
+                    <!-- Estadísticas Rápidas -->
+                    <div class="quick-stats">
+                        <h3>Distribución por Edad</h3>
+                        <div class="age-groups">
+                            <div class="age-group">
+                                <span class="age-label">15-17 años</span>
+                                <div class="age-bar">
+                                    <div class="age-fill" style="width: 30%"></div>
+                                </div>
+                                <span class="age-count">8</span>
+                            </div>
+                            <div class="age-group">
+                                <span class="age-label">18-20 años</span>
+                                <div class="age-bar">
+                                    <div class="age-fill" style="width: 45%"></div>
+                                </div>
+                                <span class="age-count">12</span>
+                            </div>
+                            <div class="age-group">
+                                <span class="age-label">21+ años</span>
+                                <div class="age-bar">
+                                    <div class="age-fill" style="width: 25%"></div>
+                                </div>
+                                <span class="age-count">4</span>
+                            </div>
+                        </div>
+                        
+                        <h3 style="margin-top: 1.5rem;">Posiciones Principales</h3>
+                        <div class="positions-list">
+                            <div class="position-item">
+                                <span class="position-name">Armador</span>
+                                <span class="position-count">4</span>
+                            </div>
+                            <div class="position-item">
+                                <span class="position-name">Opuesto</span>
+                                <span class="position-count">3</span>
+                            </div>
+                            <div class="position-item">
+                                <span class="position-name">Central</span>
+                                <span class="position-count">6</span>
+                            </div>
+                            <div class="position-item">
+                                <span class="position-name">Libero</span>
+                                <span class="position-count">3</span>
+                            </div>
+                            <div class="position-item">
+                                <span class="position-name">Externo</span>
+                                <span class="position-count">8</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Cumpleaños Próximos -->
+                    <div class="upcoming-birthdays">
+                        <h3>Cumpleaños Próximos</h3>
+                        <div class="birthday-list">
+                            <div class="birthday-item">
+                                <div class="birthday-date">
+                                    <span class="birthday-day">25</span>
+                                    <span class="birthday-month">Oct</span>
+                                </div>
+                                <div class="birthday-info">
+                                    <h4>Ana García</h4>
+                                    <p>Equipo Principal</p>
+                                </div>
+                                <button class="btn-icon small" title="Enviar saludo">
+                                    <i class="fas fa-gift"></i>
+                                </button>
+                            </div>
+                            <div class="birthday-item">
+                                <div class="birthday-date">
+                                    <span class="birthday-day">28</span>
+                                    <span class="birthday-month">Oct</span>
+                                </div>
+                                <div class="birthday-info">
+                                    <h4>Carlos López</h4>
+                                    <p>Sub-21</p>
+                                </div>
+                                <button class="btn-icon small" title="Enviar saludo">
+                                    <i class="fas fa-gift"></i>
+                                </button>
+                            </div>
+                            <div class="birthday-item">
+                                <div class="birthday-date">
+                                    <span class="birthday-day">02</span>
+                                    <span class="birthday-month">Nov</span>
+                                </div>
+                                <div class="birthday-info">
+                                    <h4>María Rodríguez</h4>
+                                    <p>Femenino</p>
+                                </div>
+                                <button class="btn-icon small" title="Enviar saludo">
+                                    <i class="fas fa-gift"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Acciones Rápidas -->
+                    <div class="quick-actions-panel">
+                        <h3>Acciones Rápidas</h3>
+                        <button class="quick-action-btn">
+                            <i class="fas fa-file-medical"></i>
+                            <span>Registrar Examen Médico</span>
+                        </button>
+                        <button class="quick-action-btn">
+                            <i class="fas fa-chart-line"></i>
+                            <span>Ver Estadísticas</span>
+                        </button>
+                        <button class="quick-action-btn">
+                            <i class="fas fa-envelope"></i>
+                            <span>Enviar Comunicado</span>
+                        </button>
+                        <button class="quick-action-btn">
+                            <i class="fas fa-file-pdf"></i>
+                            <span>Generar Reporte</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Modal para Nuevo Atleta -->
+    <div class="modal" id="athleteModal">
+        <div class="modal-content wide">
+            <div class="modal-header">
+                <h3 id="modalTitle">Nuevo Atleta</h3>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="athleteForm">
+                    <!-- Pestañas del formulario -->
+                    <div class="form-tabs">
+                        <button type="button" class="form-tab active" data-tab="basic">Información Básica</button>
+                        <button type="button" class="form-tab" data-tab="sports">Información Deportiva</button>
+                        <button type="button" class="form-tab" data-tab="medical">Historial Médico</button>
+                        <button type="button" class="form-tab" data-tab="documents">Documentos</button>
+                    </div>
+                    
+                    <!-- Contenido de pestañas -->
+                    <div class="tab-content active" id="basicTab">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="password">Username *</label>
+                                <input type="text" id="username" placeholder="username" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="password">Password *</label>
+                                <input type="password" id="password" placeholder="password" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="firstName">Nombre *</label>
+                                <input type="text" id="firstName" placeholder="Ej: Ana" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="lastName">Apellido *</label>
+                                <input type="text" id="lastName" placeholder="Ej: García" required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="documentType">Tipo de Documento *</label>
+                                <select id="documentType" required>
+                                    <option value="">Seleccionar...</option>
+                                    <option value="dni">DNI</option>
+                                    <option value="passport">Pasaporte</option>
+                                    <option value="ce">Carnet de Extranjería</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="documentNumber">Número de Documento *</label>
+                                <input type="text" id="documentNumber" placeholder="Ej: 12345678" required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="birthDate">Fecha de Nacimiento *</label>
+                                <input type="text" id="birthDate" class="datepicker" placeholder="Seleccionar fecha" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="gender">Género *</label>
+                                <select id="gender" required>
+                                    <option value="">Seleccionar...</option>
+                                    <option value="female">Femenino</option>
+                                    <option value="male">Masculino</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="email">Correo Electrónico</label>
+                                <input type="email" id="email" placeholder="Ej: ana.garcia@email.com">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="phone">Teléfono *</label>
+                                <input type="tel" id="phone" placeholder="Ej: +51 987654321" required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="address">Dirección</label>
+                            <input type="text" id="address" placeholder="Dirección completa">
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="emergencyContact">Contacto de Emergencia *</label>
+                                <input type="text" id="emergencyContact" placeholder="Nombre completo" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="emergencyPhone">Teléfono de Emergencia *</label>
+                                <input type="tel" id="emergencyPhone" placeholder="Ej: +51 987654321" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="tab-content" id="sportsTab">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="team">Equipo *</label>
+                                <select id="team" required>
+                                    <option value="">Seleccionar equipo...</option>
+                                    <option value="sub18">Sub-18</option>
+                                    <option value="sub21">Sub-21</option>
+                                    <option value="principal">Equipo Principal</option>
+                                    <option value="femenino">Femenino</option>
+                                    <option value="juvenil">Juvenil</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="position">Posición Principal *</label>
+                                <select id="position" required>
+                                    <option value="">Seleccionar posición...</option>
+                                    <option value="armador">Armador</option>
+                                    <option value="opuesto">Opuesto</option>
+                                    <option value="central">Central</option>
+                                    <option value="libero">Libero</option>
+                                    <option value="externo">Externo</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="jerseyNumber">Número de Camiseta</label>
+                                <input type="number" id="jerseyNumber" placeholder="Ej: 10" min="1" max="99">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="joinDate">Fecha de Ingreso *</label>
+                                <input type="text" id="joinDate" class="datepicker" placeholder="Seleccionar fecha" required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="height">Estatura (cm)</label>
+                                <input type="number" id="height" placeholder="Ej: 175" min="100" max="250">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="weight">Peso (kg)</label>
+                                <input type="number" id="weight" placeholder="Ej: 65" min="30" max="150" step="0.1">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="dominantHand">Mano Dominante</label>
+                            <select id="dominantHand">
+                                <option value="">Seleccionar...</option>
+                                <option value="right">Derecha</option>
+                                <option value="left">Izquierda</option>
+                                <option value="ambidextrous">Ambidiestro</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="experience">Experiencia Previa (años)</label>
+                            <input type="number" id="experience" placeholder="Ej: 3" min="0" max="50">
+                        </div>
+                    </div>
+                    
+                    <div class="tab-content" id="medicalTab">
+                        <div class="form-group">
+                            <label for="bloodType">Grupo Sanguíneo</label>
+                            <select id="bloodType">
+                                <option value="">Seleccionar...</option>
+                                <option value="a+">A+</option>
+                                <option value="a-">A-</option>
+                                <option value="b+">B+</option>
+                                <option value="b-">B-</option>
+                                <option value="ab+">AB+</option>
+                                <option value="ab-">AB-</option>
+                                <option value="o+">O+</option>
+                                <option value="o-">O-</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="allergies">Alergias</label>
+                            <textarea id="allergies" rows="3" placeholder="Lista de alergias conocidas..."></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="medicalConditions">Condiciones Médicas</label>
+                            <textarea id="medicalConditions" rows="3" placeholder="Condiciones médicas preexistentes..."></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="medications">Medicamentos</label>
+                            <textarea id="medications" rows="3" placeholder="Medicamentos de uso regular..."></textarea>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="lastMedicalCheck">Último Control Médico</label>
+                                <input type="text" id="lastMedicalCheck" class="datepicker" placeholder="Seleccionar fecha">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="nextMedicalCheck">Próximo Control</label>
+                                <input type="text" id="nextMedicalCheck" class="datepicker" placeholder="Seleccionar fecha">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="medicalInsurance">
+                                <span class="checkmark"></span>
+                                Tiene seguro médico
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="tab-content" id="documentsTab">
+                        <div class="form-group">
+                            <label>Documentos Adjuntos</label>
+                            <div class="documents-list" id="documentsList">
+                                <!-- Lista de documentos -->
+                            </div>
+                            
+                            <div class="file-upload">
+                                <input type="file" id="documentUpload" multiple style="display: none;">
+                                <button type="button" class="btn-secondary" id="uploadDocumentBtn">
+                                    <i class="fas fa-upload"></i> Subir Documentos
+                                </button>
+                                <p class="file-hint">Formatos aceptados: PDF, JPG, PNG (Máx. 5MB cada uno)</p>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="notes">Notas Adicionales</label>
+                            <textarea id="notes" rows="4" placeholder="Observaciones adicionales..."></textarea>
+                        </div>
+                    </div>
+                    
+                    <div class="modal-actions">
+                        <button type="button" class="btn-secondary close-modal">Cancelar</button>
+                        <button type="submit" class="btn-primary">
+                            <i class="fas fa-save"></i> Guardar Atleta
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal de Perfil de Atleta -->
+    <div class="modal" id="profileModal">
+        <div class="modal-content wide">
+            <div class="modal-header">
+                <h3 id="profileTitle">Perfil del Atleta</h3>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <!-- Contenido se carga dinámicamente -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
+    <script src="../js/dashboard.js"></script>
+    <script src="../../static/JS/atletas.js"></script>
+</body>
+</html>

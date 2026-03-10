@@ -1,0 +1,125 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Club de Voleibol</title>
+    <link rel="stylesheet" href="../static/Css/style.css">
+    <link rel="stylesheet" href="../static/Css/path.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+{% include "partials/panel.html" %}
+        <!-- Contenido Principal -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="header">
+                <div class="header-left">
+                    <h1>Panel de Administración</h1>
+                </div>
+                <div class="header-right">
+                    <div class="notification-icon">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge">3</span>
+                    </div>
+                    <div class="user-profile">
+                        <div class="avatar">AJ</div>
+                        <div class="user-info">
+                            <h4>Admin User</h4>
+                            <p>Administrador</p>
+                        </div>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- Área de Contenido -->
+            <div class="content-area">
+                <!-- Sección de Bienvenida -->
+                <section class="welcome-section">
+                    <h2>Bienvenido, Administrador</h2>
+                    <p>Gestiona todas las actividades del club desde este panel central.</p>
+                </section>
+                
+                <!-- Estadísticas -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon icon-1">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>24</h3>
+                            <p>Atletas Activos</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon icon-2">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>8</h3>
+                            <p>Próximos Juegos</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon icon-3">
+                            <i class="fas fa-dollar-sign"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>18</h3>
+                            <p>Pagos Pendientes</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon icon-4">
+                            <i class="fas fa-clipboard-check"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>92%</h3>
+                            <p>Asistencia Promedio</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Sección de Acciones Rápidas -->
+                <div class="quick-actions">
+                    <h2>Acciones Rápidas</h2>
+                    <div class="actions-grid">
+                        <a href="/pages/pagos.html" class="action-card">
+                            <i class="fas fa-plus-circle"></i>
+                            <h3>Registrar Pago</h3>
+                            <p>Registra un nuevo pago de membresía</p>
+                        </a>
+                        
+                        <a href="atletas.html" class="action-card">
+                            <i class="fas fa-user-plus"></i>
+                            <h3>Agregar Atleta</h3>
+                            <p>Registra un nuevo atleta en el sistema</p>
+                        </a>
+                        
+                        <a href="entrenamientos.html" class="action-card">
+                            <i class="fas fa-dumbbell"></i>
+                            <h3>Programar Entrenamiento</h3>
+                            <p>Crea una nueva sesión de entrenamiento</p>
+                        </a>
+                        
+                        <a href="juegos.html" class="action-card">
+                            <i class="fas fa-calendar-plus"></i>
+                            <h3>Agendar Juego</h3>
+                            <p>Programa un nuevo juego o partido</p>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+
+    <script src="{{ url_for('static', filename='JS/dashboard.js') }}"></script>
+</body>
+</html>

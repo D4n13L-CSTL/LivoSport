@@ -1,0 +1,846 @@
+document.addEventListener('DOMContentLoaded', function() {
+    // Variables globales
+    let currentDate = new Date();
+    let events = [];
+    let editingEventId = null;
+
+    // Datos de ejemplo para eventos
+    const sampleEvents = [
+        {
+            id: 1,
+            title: "Entrenamiento Matutino",
+            type: "training",
+            date: "2023-10-16",
+            startTime: "08:00",
+            endTime: "10:00",
+            location: "Cancha Principal",
+            teams: "Equipo Sub-18",
+            description: "Entrenamiento de técnica y resistencia",
+            color: "#3b82f6"
+        },
+        {
+            id: 2,
+            title: "Partido vs Leones",
+            type: "game",
+            date: "2023-10-21",
+            startTime: "15:00",
+            endTime: "17:00",
+            location: "Gimnasio Municipal",
+            teams: "Equipo Principal vs Leones",
+            description: "Partido de liga regular",
+            color: "#ef4444"
+        },
+        {
+            id: 3,
+            title: "Reunión de Padres",
+            type: "meeting",
+            date: "2023-10-25",
+            startTime: "19:00",
+            endTime: "20:30",
+            location: "Sala de Conferencias",
+            teams: "Padres de atletas Sub-18",
+            description: "Reunión informativa sobre próximo torneo",
+            color: "#8b5cf6"
+        },
+        {
+            id: 4,
+            title: "Torneo Juvenil",
+            type: "event",
+            date: "2023-10-28",
+            startTime: "09:00",
+            endTime: "18:00",
+            location: "Complejo Deportivo",
+            teams: "Todos los equipos juveniles",
+            description: "Torneo regional juvenil",
+            color: "#10b981"
+        },
+        {
+            id: 5,
+            title: "Entrenamiento Técnico",
+            type: "training",
+            date: "2023-10-18",
+            startTime: "17:00",
+            endTime: "19:00",
+            location: "Cancha 2",
+            teams: "Equipo Femenino",
+            description: "Técnica de saque y recepción",
+            color: "#3b82f6"
+        },
+        {
+            id: 6,
+            title: "Partido Amistoso",
+            type: "game",
+            date: "2023-10-30",
+            startTime: "16:00",
+            endTime: "18:00",
+            location: "Polideportivo",
+            teams: "Equipo Principal vs Águilas",
+            description: "Partido amistoso de preparación",
+            color: "#ef4444"
+        },
+        {
+            id: 7,
+            title: "Sesión de Video",
+            type: "meeting",
+            date: "2023-10-19",
+            startTime: "18:00",
+            endTime: "19:30",
+            location: "Sala de Reuniones",
+            teams: "Equipo Principal",
+            description: "Análisis de partidos anteriores",
+            color: "#8b5cf6"
+        },
+        {
+            id: 8,
+            title: "Clínica de Voleibol",
+            type: "event",
+            date: "2023-11-02",
+            startTime: "10:00",
+            endTime: "16:00",
+            location: "Gimnasio Principal",
+            teams: "Todos los niveles",
+            description: "Clínica con entrenador invitado",
+            color: "#10b981"
+        }
+    ];
+
+    // Inicializar eventos
+    events = [...sampleEvents];
+
+    // Elementos del DOM
+    const currentMonthElement = document.getElementById('currentMonth');
+    const monthGrid = document.getElementById('monthGrid');
+    const prevMonthBtn = document.getElementById('prevMonth');
+    const nextMonthBtn = document.getElementById('nextMonth');
+    const todayBtn = document.getElementById('todayBtn');
+    const viewButtons = document.querySelectorAll('.view-btn');
+    const calendarViews = document.querySelectorAll('.calendar-view');
+    const eventModal = document.getElementById('eventModal');
+    const addEventBtn = document.getElementById('addEventBtn');
+    const closeModalBtns = document.querySelectorAll('.close-modal');
+    const eventForm = document.getElementById('eventForm');
+    const eventDateInput = document.getElementById('eventDate');
+    const startTimeInput = document.getElementById('startTime');
+    const endTimeInput = document.getElementById('endTime');
+    const allDayCheckbox = document.getElementById('allDayEvent');
+    const filterCheckboxes = document.querySelectorAll('.filter-checkbox input');
+    const eventsListContainer = document.getElementById('eventsList');
+
+    // Inicializar selectores de fecha y hora
+    const datePicker = flatpickr(eventDateInput, {
+        locale: "es",
+        dateFormat: "Y-m-d",
+        defaultDate: "today"
+    });
+
+    const startTimePicker = flatpickr(startTimeInput, {
+        enableTime: true,
+        noCalendar: true,
+        dateFormat: "H:i",
+        time_24hr: true,
+        defaultHour: 9,
+        defaultMinute: 0
+    });
+
+    const endTimePicker = flatpickr(endTimeInput, {
+        enableTime: true,
+        noCalendar: true,
+        dateFormat: "H:i",
+        time_24hr: true,
+        defaultHour: 10,
+        defaultMinute: 0
+    });
+
+    // Manejar checkbox "Todo el día"
+    allDayCheckbox.addEventListener('change', function() {
+        if (this.checked) {
+            startTimeInput.disabled = true;
+            endTimeInput.disabled = true;
+            startTimeInput.value = '';
+            endTimeInput.value = '';
+        } else {
+            startTimeInput.disabled = false;
+            endTimeInput.disabled = false;
+        }
+    });
+
+    // Inicializar calendario
+    updateCalendar();
+    updateEventList();
+    loadWeekView();
+    loadDayView();
+
+    // Navegación del calendario
+    prevMonthBtn.addEventListener('click', () => {
+        currentDate.setMonth(currentDate.getMonth() - 1);
+        updateCalendar();
+    });
+
+    nextMonthBtn.addEventListener('click', () => {
+        currentDate.setMonth(currentDate.getMonth() + 1);
+        updateCalendar();
+    });
+
+    todayBtn.addEventListener('click', () => {
+        currentDate = new Date();
+        updateCalendar();
+    });
+
+    // Cambiar vista del calendario
+    viewButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const view = button.getAttribute('data-view');
+            
+            // Actualizar botones activos
+            viewButtons.forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+            
+            // Mostrar vista correspondiente
+            calendarViews.forEach(viewElement => {
+                viewElement.classList.remove('active');
+                if (viewElement.id === `${view}View`) {
+                    viewElement.classList.add('active');
+                }
+            });
+            
+            // Actualizar contenido de la vista
+            if (view === 'week') {
+                loadWeekView();
+            } else if (view === 'day') {
+                loadDayView();
+            } else if (view === 'list') {
+                updateEventList();
+            }
+        });
+    });
+
+    // Filtros de eventos
+    filterCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', () => {
+            updateCalendar();
+        });
+    });
+
+    // Modal de evento
+    addEventBtn.addEventListener('click', () => {
+        editingEventId = null;
+        document.getElementById('modalTitle').textContent = 'Nuevo Evento';
+        eventForm.reset();
+        startTimeInput.disabled = false;
+        endTimeInput.disabled = false;
+        eventModal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    });
+
+    closeModalBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            eventModal.classList.remove('active');
+            document.body.style.overflow = 'auto';
+            eventForm.reset();
+        });
+    });
+
+    eventModal.addEventListener('click', (e) => {
+        if (e.target === eventModal) {
+            eventModal.classList.remove('active');
+            document.body.style.overflow = 'auto';
+            eventForm.reset();
+        }
+    });
+
+    // Enviar formulario de evento
+    eventForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        // Obtener datos del formulario
+        const eventData = {
+            title: document.getElementById('eventTitle').value,
+            type: document.getElementById('eventType').value,
+            date: eventDateInput.value,
+            startTime: allDayCheckbox.checked ? '' : startTimeInput.value,
+            endTime: allDayCheckbox.checked ? '' : endTimeInput.value,
+            location: document.getElementById('eventLocation').value,
+            teams: document.getElementById('eventTeams').value,
+            description: document.getElementById('eventDescription').value,
+            allDay: allDayCheckbox.checked
+        };
+        
+        // Validaciones
+        if (!eventData.title || !eventData.type || !eventData.date) {
+            showAlert('Por favor complete los campos requeridos', 'error');
+            return;
+        }
+        
+        if (!eventData.allDay && (!eventData.startTime || !eventData.endTime)) {
+            showAlert('Por favor ingrese la hora de inicio y fin', 'error');
+            return;
+        }
+        
+        // Determinar color según tipo
+        const typeColors = {
+            training: '#3b82f6',
+            game: '#ef4444',
+            meeting: '#8b5cf6',
+            event: '#10b981',
+            other: '#6b7280'
+        };
+        
+        if (editingEventId) {
+            // Editar evento existente
+            const index = events.findIndex(event => event.id === editingEventId);
+            if (index !== -1) {
+                events[index] = {
+                    ...events[index],
+                    ...eventData,
+                    color: typeColors[eventData.type] || '#6b7280',
+                    id: editingEventId
+                };
+                showAlert('Evento actualizado exitosamente', 'success');
+            }
+        } else {
+            // Crear nuevo evento
+            const newEvent = {
+                ...eventData,
+                id: events.length > 0 ? Math.max(...events.map(e => e.id)) + 1 : 1,
+                color: typeColors[eventData.type] || '#6b7280'
+            };
+            events.push(newEvent);
+            showAlert('Evento creado exitosamente', 'success');
+        }
+        
+        // Actualizar vistas
+        updateCalendar();
+        updateEventList();
+        loadWeekView();
+        loadDayView();
+        
+        // Cerrar modal y resetear formulario
+        eventModal.classList.remove('active');
+        document.body.style.overflow = 'auto';
+        eventForm.reset();
+        editingEventId = null;
+    });
+
+    // Funciones principales
+    function updateCalendar() {
+        const year = currentDate.getFullYear();
+        const month = currentDate.getMonth();
+        
+        // Actualizar título del mes
+        const monthNames = [
+            'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+            'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+        ];
+        currentMonthElement.textContent = `${monthNames[month]} ${year}`;
+        
+        // Obtener primer día del mes y último día
+        const firstDay = new Date(year, month, 1);
+        const lastDay = new Date(year, month + 1, 0);
+        
+        // Obtener día de la semana del primer día (0 = Domingo, 1 = Lunes, etc.)
+        let firstDayIndex = firstDay.getDay(); // Domingo = 0
+        
+        // Ajustar para que la semana empiece en Lunes
+        firstDayIndex = firstDayIndex === 0 ? 6 : firstDayIndex - 1;
+        
+        // Obtener último día del mes
+        const lastDate = lastDay.getDate();
+        
+        // Limpiar grid
+        monthGrid.innerHTML = '';
+        
+        // Agregar días del mes anterior
+        const prevMonthLastDay = new Date(year, month, 0).getDate();
+        for (let i = 0; i < firstDayIndex; i++) {
+            const dayNumber = prevMonthLastDay - firstDayIndex + i + 1;
+            const dayElement = createDayElement(dayNumber, true, year, month - 1);
+            monthGrid.appendChild(dayElement);
+        }
+        
+        // Agregar días del mes actual
+        const today = new Date();
+        const isTodayMonth = today.getMonth() === month && today.getFullYear() === year;
+        
+        for (let day = 1; day <= lastDate; day++) {
+            const isToday = isTodayMonth && day === today.getDate();
+            const dayElement = createDayElement(day, false, year, month, isToday);
+            monthGrid.appendChild(dayElement);
+        }
+        
+        // Completar con días del próximo mes
+        const totalCells = 42; // 6 semanas * 7 días
+        const remainingCells = totalCells - (firstDayIndex + lastDate);
+        
+        for (let i = 1; i <= remainingCells; i++) {
+            const dayElement = createDayElement(i, true, year, month + 1);
+            monthGrid.appendChild(dayElement);
+        }
+    }
+    
+    function createDayElement(dayNumber, isOtherMonth, year, month, isToday = false) {
+        const dayElement = document.createElement('div');
+        dayElement.className = 'calendar-day';
+        
+        if (isOtherMonth) {
+            dayElement.classList.add('other-month');
+        }
+        
+        if (isToday) {
+            dayElement.classList.add('today');
+        }
+        
+        // Crear fecha completa para este día
+        const dayDate = new Date(year, month, dayNumber);
+        const dateString = dayDate.toISOString().split('T')[0];
+        
+        // Verificar si hay eventos para este día
+        const dayEvents = getEventsForDate(dateString);
+        if (dayEvents.length > 0) {
+            dayElement.classList.add('has-events');
+        }
+        
+        // Número del día
+        const dayNumberElement = document.createElement('div');
+        dayNumberElement.className = 'day-number';
+        dayNumberElement.textContent = dayNumber;
+        dayElement.appendChild(dayNumberElement);
+        
+        // Eventos del día (mostrar máximo 2)
+        if (dayEvents.length > 0) {
+            const eventsContainer = document.createElement('div');
+            eventsContainer.className = 'day-events';
+            
+            const eventsToShow = dayEvents.slice(0, 2);
+            eventsToShow.forEach(event => {
+                const eventElement = document.createElement('div');
+                eventElement.className = `day-event ${event.type}`;
+                eventElement.textContent = event.title;
+                eventElement.title = `${event.title}\n${event.startTime} - ${event.endTime}\n${event.location}`;
+                eventElement.addEventListener('click', () => viewEventDetails(event.id));
+                eventsContainer.appendChild(eventElement);
+            });
+            
+            // Mostrar indicador si hay más eventos
+            if (dayEvents.length > 2) {
+                const moreEventsElement = document.createElement('div');
+                moreEventsElement.className = 'more-events';
+                moreEventsElement.textContent = `+${dayEvents.length - 2} más`;
+                moreEventsElement.addEventListener('click', () => showDayEvents(dayDate, dayEvents));
+                eventsContainer.appendChild(moreEventsElement);
+            }
+            
+            dayElement.appendChild(eventsContainer);
+        }
+        
+        return dayElement;
+    }
+    
+    function getEventsForDate(dateString) {
+        // Obtener filtros activos
+        const activeFilters = Array.from(filterCheckboxes)
+            .filter(cb => cb.checked)
+            .map(cb => cb.id.replace('filter', '').toLowerCase());
+        
+        return events.filter(event => {
+            // Filtrar por fecha
+            const matchesDate = event.date === dateString;
+            
+            // Filtrar por tipo si hay filtros activos
+            const matchesType = activeFilters.length === 0 || activeFilters.includes(event.type);
+            
+            return matchesDate && matchesType;
+        });
+    }
+    
+    function loadWeekView() {
+        // Esta función cargaría los eventos para la vista semanal
+        // Por simplicidad, aquí mostramos una implementación básica
+        const weekEvents = document.querySelectorAll('.week-event');
+        weekEvents.forEach(eventElement => {
+            eventElement.addEventListener('click', () => {
+                const eventTitle = eventElement.querySelector('.event-title').textContent;
+                alert(`Evento: ${eventTitle}\nHaz clic para ver detalles completos.`);
+            });
+        });
+    }
+    
+    function loadDayView() {
+        // Esta función cargaría los eventos para la vista diaria
+        // Por simplicidad, aquí mostramos una implementación básica
+        const dayTimeline = document.querySelector('.day-timeline');
+        if (dayTimeline) {
+            dayTimeline.innerHTML = `
+                <div class="time-slot">
+                    <div class="time-label">08:00</div>
+                    <div class="time-content">
+                        <div class="day-event-item training" style="top: 0; height: 80px;">
+                            <strong>Entrenamiento Matutino</strong><br>
+                            <small>08:00 - 10:00 | Cancha Principal</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="time-slot">
+                    <div class="time-label">10:00</div>
+                    <div class="time-content"></div>
+                </div>
+                <div class="time-slot">
+                    <div class="time-label">12:00</div>
+                    <div class="time-content"></div>
+                </div>
+                <div class="time-slot">
+                    <div class="time-label">14:00</div>
+                    <div class="time-content"></div>
+                </div>
+                <div class="time-slot">
+                    <div class="time-label">16:00</div>
+                    <div class="time-content">
+                        <div class="day-event-item meeting" style="top: 20px; height: 60px;">
+                            <strong>Reunión Técnica</strong><br>
+                            <small>16:20 - 17:20 | Sala de Reuniones</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="time-slot">
+                    <div class="time-label">18:00</div>
+                    <div class="time-content">
+                        <div class="day-event-item training" style="top: 0; height: 80px;">
+                            <strong>Entrenamiento Nocturno</strong><br>
+                            <small>18:00 - 20:00 | Cancha Cubierta</small>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+    }
+    
+    function updateEventList() {
+        if (!eventsListContainer) return;
+        
+        eventsListContainer.innerHTML = '';
+        
+        // Ordenar eventos por fecha (más cercanos primero)
+        const sortedEvents = [...events].sort((a, b) => {
+            return new Date(a.date) - new Date(b.date);
+        });
+        
+        // Mostrar eventos
+        sortedEvents.forEach(event => {
+            const eventDate = new Date(event.date);
+            const day = eventDate.getDate();
+            const month = eventDate.toLocaleDateString('es-ES', { month: 'short' });
+            
+            const eventElement = document.createElement('div');
+            eventElement.className = 'list-event';
+            eventElement.innerHTML = `
+                <div class="list-event-date">
+                    <span class="list-event-day">${day}</span>
+                    <span class="list-event-month">${month}</span>
+                </div>
+                <div class="list-event-content">
+                    <h4 class="list-event-title">${event.title}</h4>
+                    <div class="list-event-details">
+                        <span><i class="far fa-clock"></i> ${event.startTime || 'Todo el día'}</span>
+                        <span><i class="fas fa-map-marker-alt"></i> ${event.location || 'Sin ubicación'}</span>
+                    </div>
+                    <span class="list-event-type" style="background-color: ${event.color}">
+                        ${getEventTypeText(event.type)}
+                    </span>
+                    ${event.description ? `<p class="list-event-description">${event.description}</p>` : ''}
+                </div>
+            `;
+            
+            eventElement.addEventListener('click', () => viewEventDetails(event.id));
+            eventsListContainer.appendChild(eventElement);
+        });
+        
+        if (sortedEvents.length === 0) {
+            eventsListContainer.innerHTML = `
+                <div style="text-align: center; padding: 3rem; color: #94a3b8;">
+                    <i class="fas fa-calendar-times" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+                    <p>No hay eventos programados</p>
+                </div>
+            `;
+        }
+    }
+    
+    function viewEventDetails(eventId) {
+        const event = events.find(e => e.id === eventId);
+        if (!event) return;
+        
+        const modal = document.createElement('div');
+        modal.className = 'modal active';
+        modal.innerHTML = `
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>${event.title}</h3>
+                    <span class="close-modal">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <div style="margin-bottom: 1.5rem;">
+                        <span class="status-badge" style="background-color: ${event.color}; color: white;">
+                            ${getEventTypeText(event.type)}
+                        </span>
+                    </div>
+                    
+                    <div class="event-details">
+                        <div class="detail-item">
+                            <i class="far fa-calendar"></i>
+                            <div>
+                                <strong>Fecha:</strong>
+                                <p>${formatDate(event.date)}</p>
+                            </div>
+                        </div>
+                        
+                        ${event.startTime ? `
+                        <div class="detail-item">
+                            <i class="far fa-clock"></i>
+                            <div>
+                                <strong>Horario:</strong>
+                                <p>${event.startTime} - ${event.endTime}</p>
+                            </div>
+                        </div>
+                        ` : ''}
+                        
+                        ${event.location ? `
+                        <div class="detail-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <div>
+                                <strong>Ubicación:</strong>
+                                <p>${event.location}</p>
+                            </div>
+                        </div>
+                        ` : ''}
+                        
+                        ${event.teams ? `
+                        <div class="detail-item">
+                            <i class="fas fa-users"></i>
+                            <div>
+                                <strong>Participantes:</strong>
+                                <p>${event.teams}</p>
+                            </div>
+                        </div>
+                        ` : ''}
+                        
+                        ${event.description ? `
+                        <div class="detail-item">
+                            <i class="far fa-file-alt"></i>
+                            <div>
+                                <strong>Descripción:</strong>
+                                <p>${event.description}</p>
+                            </div>
+                        </div>
+                        ` : ''}
+                    </div>
+                    
+                    <div class="modal-actions" style="margin-top: 2rem;">
+                        <button type="button" class="btn-secondary close-detail-modal">Cerrar</button>
+                        <button type="button" class="btn-primary" onclick="editEventFromDetails(${eventId})">
+                            <i class="fas fa-edit"></i> Editar
+                        </button>
+                        <button type="button" class="btn-danger" onclick="deleteEventFromDetails(${eventId})">
+                            <i class="fas fa-trash"></i> Eliminar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(modal);
+        document.body.style.overflow = 'hidden';
+        
+        // Cerrar modal
+        modal.querySelector('.close-modal').addEventListener('click', () => {
+            document.body.removeChild(modal);
+            document.body.style.overflow = 'auto';
+        });
+        
+        modal.querySelector('.close-detail-modal').addEventListener('click', () => {
+            document.body.removeChild(modal);
+            document.body.style.overflow = 'auto';
+        });
+        
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                document.body.removeChild(modal);
+                document.body.style.overflow = 'auto';
+            }
+        });
+    }
+    
+    function showDayEvents(date, dayEvents) {
+        const dateString = formatDate(date.toISOString().split('T')[0]);
+        let message = `Eventos para ${dateString}:\n\n`;
+        
+        dayEvents.forEach((event, index) => {
+            message += `${index + 1}. ${event.title}\n`;
+            message += `   Horario: ${event.startTime || 'Todo el día'}\n`;
+            message += `   Ubicación: ${event.location || 'No especificada'}\n\n`;
+        });
+        
+        alert(message);
+    }
+    
+    function formatDate(dateString) {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('es-ES', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+    }
+    
+    function getEventTypeText(type) {
+        const typeMap = {
+            'training': 'Entrenamiento',
+            'game': 'Juego',
+            'meeting': 'Reunión',
+            'event': 'Evento',
+            'other': 'Otro'
+        };
+        return typeMap[type] || 'Evento';
+    }
+    
+    function showAlert(message, type) {
+        const alertDiv = document.createElement('div');
+        alertDiv.className = `alert alert-${type}`;
+        alertDiv.textContent = message;
+        
+        alertDiv.style.position = 'fixed';
+        alertDiv.style.top = '20px';
+        alertDiv.style.right = '20px';
+        alertDiv.style.padding = '15px 20px';
+        alertDiv.style.borderRadius = '8px';
+        alertDiv.style.color = 'white';
+        alertDiv.style.fontWeight = '500';
+        alertDiv.style.zIndex = '1001';
+        alertDiv.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+        alertDiv.style.animation = 'slideIn 0.3s ease-out';
+        
+        if (type === 'success') {
+            alertDiv.style.backgroundColor = '#10b981';
+        } else if (type === 'error') {
+            alertDiv.style.backgroundColor = '#ef4444';
+        }
+        
+        document.body.appendChild(alertDiv);
+        
+        setTimeout(() => {
+            alertDiv.style.animation = 'slideOut 0.3s ease-out';
+            setTimeout(() => {
+                document.body.removeChild(alertDiv);
+            }, 300);
+        }, 4000);
+    }
+
+    // Funciones globales para detalles de eventos
+    window.editEventFromDetails = function(eventId) {
+        const event = events.find(e => e.id === eventId);
+        if (!event) return;
+        
+        editingEventId = eventId;
+        
+        // Llenar formulario con datos del evento
+        document.getElementById('eventTitle').value = event.title;
+        document.getElementById('eventType').value = event.type;
+        eventDateInput.value = event.date;
+        startTimeInput.value = event.startTime || '';
+        endTimeInput.value = event.endTime || '';
+        document.getElementById('eventLocation').value = event.location || '';
+        document.getElementById('eventTeams').value = event.teams || '';
+        document.getElementById('eventDescription').value = event.description || '';
+        document.getElementById('allDayEvent').checked = !event.startTime;
+        document.getElementById('sendNotification').checked = false;
+        
+        // Actualizar estado de campos de tiempo
+        if (!event.startTime) {
+            startTimeInput.disabled = true;
+            endTimeInput.disabled = true;
+        }
+        
+        // Actualizar título del modal
+        document.getElementById('modalTitle').textContent = 'Editar Evento';
+        
+        // Cerrar modal de detalles
+        document.querySelector('.modal.active').remove();
+        
+        // Abrir modal de edición
+        eventModal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    };
+    
+    window.deleteEventFromDetails = function(eventId) {
+        if (confirm('¿Está seguro de eliminar este evento?')) {
+            const index = events.findIndex(e => e.id === eventId);
+            if (index !== -1) {
+                events.splice(index, 1);
+                
+                // Cerrar modal de detalles
+                document.querySelector('.modal.active').remove();
+                document.body.style.overflow = 'auto';
+                
+                // Actualizar vistas
+                updateCalendar();
+                updateEventList();
+                loadWeekView();
+                loadDayView();
+                
+                showAlert('Evento eliminado exitosamente', 'success');
+            }
+        }
+    };
+
+    // Agregar estilos para detalles del evento
+    const style = document.createElement('style');
+    style.textContent = `
+        .event-details {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .detail-item {
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+        }
+        
+        .detail-item i {
+            color: var(--primary-color);
+            font-size: 1.2rem;
+            margin-top: 2px;
+            width: 24px;
+        }
+        
+        .detail-item strong {
+            display: block;
+            color: var(--gray-dark);
+            font-size: 0.9rem;
+            margin-bottom: 0.25rem;
+        }
+        
+        .detail-item p {
+            margin: 0;
+            color: var(--secondary-color);
+        }
+        
+        .btn-danger {
+            background-color: #ef4444;
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-danger:hover {
+            background-color: #dc2626;
+        }
+    `;
+    document.head.appendChild(style);
+});
