@@ -13,9 +13,11 @@ probar_conexion()
 def a():
     c = conexion_db()
     cur = c.cursor()
-    query = cur.execute('select * from info_depot_atleta')
+    query = cur.execute('select * from pagos')
     
     columns = [i[0] for i in cur.description]
     return columns
 
 
+s = a()
+print(s)

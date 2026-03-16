@@ -4,7 +4,11 @@ class loginUser(BaseDAO):
 
     def login_user(self,username):
         query = """
-            select * from usuarios where username = %s
+                select usuarios.*, tipo_de_user.nombre, atletas.n_documento from usuarios 
+                join tipo_de_user on usuarios.tipo_de_user_id = tipo_de_user.id
+                left join atletas on atletas.id_usuario = usuarios.id
+                where username = %s
+                
                 """
 
         return self.fetch_all(query, (username,))

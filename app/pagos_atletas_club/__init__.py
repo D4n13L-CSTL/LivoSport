@@ -1,15 +1,8 @@
-from .db import ReportarPago, VerPagos, UpdateReportePago, GuardarHistorial
 from conexiones.cursores import get_cursor
-from .services import ReportePagoAtleta, VerPagosServices, UpdatePagoServices, HistoriaDePagoServices
+from .db import RegistroPagos
+from .services import ServiceRegistrarPago
 
+daoRegistro = RegistroPagos(get_cursor)
 
-pago_atleta  = ReportarPago(get_cursor)
-visualizacion_de_pagos = VerPagos(get_cursor)
-cambio_status = UpdateReportePago(get_cursor)
-historial = GuardarHistorial(get_cursor)
+service = ServiceRegistrarPago(daoRegistro)
 
-
-realizar_pago  = ReportePagoAtleta(pago_atleta)
-visualizacion_de_pagos_services = VerPagosServices(visualizacion_de_pagos)
-cambio_de_estatus_services = UpdatePagoServices(cambio_status)
-historial_services = HistoriaDePagoServices(historial)

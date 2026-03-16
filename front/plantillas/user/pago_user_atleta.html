@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Pagos - Club de Voleibol</title>
+    <link rel="stylesheet" href="../../static/Css/components.css">
+    <link rel="stylesheet" href="../../static/Css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+</head>
+<body>
+    {% include "partials/panel.html" %}
+        
+        <!-- Contenido Principal -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="header">
+                <div class="header-left">
+                    <h1>Gestión de Pagos - Club <span>{{club}}</span></h1>
+                </div>
+                <div class="header-right">
+                    <div class="notification-icon">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge">3</span>
+                    </div>
+                    <div class="user-profile">
+                        <div class="avatar">AJ</div>
+                        <div class="user-info">
+                            <h4>Admin User</h4>
+                            <p>{{username}}</p>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- Área de Contenido -->
+            <div class="content-area">
+                <!-- Sección de Estadísticas -->
+                <div class="stats-row">
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background-color: #10b981;">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>$4,850</h3>
+                            <p>Pagado este mes</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background-color: #f59e0b;">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>$1,250</h3>
+                            <p>Pendiente</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background-color: #ef4444;">
+                            <i class="fas fa-exclamation-circle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>8</h3>
+                            <p>Pagos atrasados</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background-color: #8b5cf6;">
+                            <i class="fas fa-user-check"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>18</h3>
+                            <p>Al día con pagos</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Panel Principal de Pagos -->
+                <div class="content-panel">
+                    <div class="panel-header">
+                        <h2>Registro de Pagos</h2>
+                        <button class="btn-primary" id="openPaymentModal">
+                            <i class="fas fa-plus"></i> Nuevo Pago
+                        </button>
+                    </div>
+                    
+                    <!-- Filtros -->
+                    <div class="filters-section">
+                        <div class="filter-group">
+                            <label for="filterStatus">Estado:</label>
+                            <select id="filterStatus" class="filter-select">
+                                <option value="all">Todos</option>
+                                <option value="paid">Pagado</option>
+                                <option value="pending">Pendiente</option>
+                                <option value="overdue">Atrasado</option>
+                            </select>
+                        </div>
+                        
+                        <div class="filter-group">
+                            <label for="filterMonth">Mes:</label>
+                            <select id="filterMonth" class="filter-select">
+                                <option value="all">Todos los meses</option>
+                                <option value="1">Enero</option>
+                                <option value="2">Febrero</option>
+                                <option value="3">Marzo</option>
+                                <option value="4">Abril</option>
+                                <option value="5">Mayo</option>
+                                <option value="6">Junio</option>
+                                <option value="7">Julio</option>
+                                <option value="8">Agosto</option>
+                                <option value="9">Septiembre</option>
+                                <option value="10">Octubre</option>
+                                <option value="11">Noviembre</option>
+                                <option value="12">Diciembre</option>
+                            </select>
+                        </div>
+                        
+                        <div class="filter-group">
+                            <label for="searchPayment">Buscar:</label>
+                            <div class="search-input">
+                                <i class="fas fa-search"></i>
+                                <input type="text" id="searchPayment" placeholder="Buscar por atleta...">
+                            </div>
+                        </div>
+                        
+                        <button class="btn-secondary" id="resetFilters">
+                            <i class="fas fa-redo"></i> Restablecer
+                        </button>
+                    </div>
+                    
+                    <!-- Tabla de Pagos -->
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Atleta</th>
+                                    <th>Concepto</th>
+                                    <th>Fecha Vencimiento</th>
+                                    <th>Fecha Pago</th>
+                                    <th>Monto</th>
+                                    <th>Método</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="paymentsTableBody">
+                                <!-- Los datos se cargarán con JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Paginación -->
+                    <div class="pagination">
+                        <button class="pagination-btn" id="prevPage" disabled>
+                            <i class="fas fa-chevron-left"></i> Anterior
+                        </button>
+                        <div class="page-numbers">
+                            <span class="page-number active">1</span>
+                            <span class="page-number">2</span>
+                            <span class="page-number">3</span>
+                        </div>
+                        <button class="pagination-btn" id="nextPage">
+                            Siguiente <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Panel de Resumen -->
+                <div class="summary-panel">
+                    <h3>Resumen de Pagos</h3>
+                    <div class="summary-item">
+                        <span>Total Recaudado:</span>
+                        <strong>$12,450</strong>
+                    </div>
+                    <div class="summary-item">
+                        <span>Pagos este mes:</span>
+                        <strong>$4,850</strong>
+                    </div>
+                    <div class="summary-item">
+                        <span>Promedio por atleta:</span>
+                        <strong>$120/mes</strong>
+                    </div>
+                    <div class="summary-item">
+                        <span>Próximo vencimiento:</span>
+                        <strong class="due-soon">15 Oct</strong>
+                    </div>
+                    
+                    <div class="progress-section">
+                        <div class="progress-header">
+                            <span>Tasa de pagos completos</span>
+                            <span>78%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 78%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="payment-methods">
+                        <h4>Métodos de Pago Más Usados</h4>
+                        <div class="method-item">
+                            <i class="fas fa-university"></i>
+                            <span>Transferencia</span>
+                            <span class="method-count">45%</span>
+                        </div>
+                        <div class="method-item">
+                            <i class="fas fa-credit-card"></i>
+                            <span>Tarjeta</span>
+                            <span class="method-count">30%</span>
+                        </div>
+                        <div class="method-item">
+                            <i class="fas fa-money-bill-wave"></i>
+                            <span>Efectivo</span>
+                            <span class="method-count">25%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Modal para Nuevo Pago -->
+    <div class="modal" id="paymentModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Registrar Nuevo Pago</h3>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="paymentForm">
+                    <div class="form-row">
+                        
+                        
+                        <div class="form-group">
+                            <label for="paymentAmount">Monto *</label>
+                            <div class="input-with-prefix">
+                                <span>$</span>
+                                <input type="number" id="paymentAmount" placeholder="0.00" step="0.01" min="0" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="paymentConcept">Concepto *</label>
+                            <select id="paymentConcept" required>
+                                <option value="">Seleccionar concepto...</option>
+                                <option value="mensualidad">Mensualidad</option>
+                                <option value="inscripcion">Inscripción</option>
+                                <option value="uniforme">Uniforme</option>
+                                <option value="equipo">Equipo</option>
+                                <option value="torneo">Inscripción a torneo</option>
+                                <option value="otro">Otro</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="paymentMethod">Método de Pago *</label>
+                            <select id="paymentMethod" required>
+                                <option value="">Seleccionar método...</option>
+                                <option value="transferencia">Transferencia</option>
+                                <option value="tarjeta">Tarjeta de crédito/débito</option>
+                                <option value="efectivo">Efectivo</option>
+                                <option value="cheque">Cheque</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="dueDate">Fecha de Vencimiento</label>
+                            <input type="text" id="dueDate" class="datepicker" placeholder="Seleccionar fecha">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="paymentDate">Fecha de Pago</label>
+                            <input type="text" id="paymentDate" class="datepicker" placeholder="Seleccionar fecha">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="paymentNotes">Notas adicionales</label>
+                        <textarea id="paymentNotes" rows="3" placeholder="Observaciones sobre el pago..."></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="markAsPaid">
+                            <span class="checkmark"></span>
+                            Marcar como pagado
+                        </label>
+                    </div>
+                    
+                    <div class="modal-actions">
+                        <button type="button" class="btn-secondary close-modal">Cancelar</button>
+                        <button type="submit" class="btn-primary">
+                            <i class="fas fa-save"></i> Guardar Pago
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
+    <script src="../../static/JS/partial/pagos_atletas.js"></script>
+</body>
+</html>

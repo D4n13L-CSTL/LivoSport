@@ -19,9 +19,12 @@ class Login(Resource):
                 password = data['password']
                 if username and password:
                     validar  = login_iniar.login_user_service(username, password)
+                    print(validar)
                     if validar.get('Auth') == True:
 
                         session['usuario'] = username
+                        session['tipo_user'] = validar.get('tipo_user')
+                        
                         
                         res = {
                                 "success": True, 
@@ -29,8 +32,19 @@ class Login(Resource):
                                 "redirect_url": url_for('Renders.render_index') 
                             }, 200
                         
+                        res_atleta = {
+                            "success": True, 
+                            "message": "logout exitoso", 
+                            "redirect_url": url_for('Renders.render_pagos') 
+                        }, 200
+
+                        if  session['tipo_user'] == 'club':
                         
-                        return res
+                            return res
+                        
+                        else:
+                            session['cedula'] = validar.get('cedula')
+                            return res_atleta
                     else:
                         return make_response(jsonify(validar))
                 else:
@@ -46,12 +60,17 @@ class Logout(Resource):
         try:
              
             session.pop('usuario')
+            session.pop('tipo_user')
             print(session)
             res = {
                 "success": True, 
                 "message": "logout exitoso", 
                 "redirect_url": url_for('Renders.render_login') 
             }, 200
+
+            
+            
+
             return res
         except:
             pass

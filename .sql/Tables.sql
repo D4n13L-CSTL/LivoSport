@@ -6,6 +6,7 @@ CREATE TABLE usuarios (
   "tipo_de_user_id" int
 );
 
+
 CREATE TABLE clubes (
   "id" serial PRIMARY KEY,
   "nombre" text,
@@ -13,7 +14,11 @@ CREATE TABLE clubes (
   "email" text,
   "telefono" text,
   "fecha_create" date,
-  "fecha_update" date
+  "fecha_update" date,
+  "id_usario" int,
+  CONSTRAINT fk_club_user FOREIGN KEY (id_usario)
+    REFERENCES usuarios (id)
+   
 );
 
 CREATE TABLE roles_de_club (
@@ -116,10 +121,9 @@ CREATE TABLE pagos (
     monto NUMERIC(10,2) NOT NULL,
     fecha_pago DATE NOT NULL,
     referencia VARCHAR(100), -- nro de transacción, recibo, etc.
-    id_metodo INT REFERENCES metodo_pago(id),
+    metodo text ,
     comprobante_url TEXT, -- si guardas evidencia (ej: imagen/pdf en S3)
     estado VARCHAR(20) DEFAULT 'pendiente', 
-    -- valores: pendiente, aprobado, rechazado
     fecha_reporte TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -130,7 +134,6 @@ CREATE TABLE pagos_historial (
     estado VARCHAR(20) NOT NULL, -- pendiente, aprobado, rechazado
     comentario TEXT,
     fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    id_usuario INT REFERENCES usuarios(id) -- quien hizo la acción (admin club)
 );
 
 

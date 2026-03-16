@@ -3,19 +3,7 @@ document.addEventListener('DOMContentLoaded', function() {
     loadDashboardData();
     
     // Manejar cierre de sesión
-    const logoutBtn = document.getElementById('logoutBtn');
-    if (logoutBtn) {
-        logoutBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            
-            // En un sistema real, esto limpiaría el token de autenticación
-            localStorage.removeItem('isAuthenticated');
-            localStorage.removeItem('rememberMe');
-            
-            // Redirigir al login
-            window.location.href = '/';
-        });
-    }
+    
     
     // Notificaciones
     const notificationIcon = document.querySelector('.notification-icon');
