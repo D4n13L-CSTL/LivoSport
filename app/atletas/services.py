@@ -63,6 +63,9 @@ class ServiceRegistrarAtletas:
     def aleta_update(self,id_atleta, datos):
         
 
+
+
+        
         return self.atletasDBO.update_atleta(id_atleta, datos)
 
 

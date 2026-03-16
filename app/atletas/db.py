@@ -108,23 +108,46 @@ class RegistraAtleta(WriteDAO):
         print(set_query)
         valores = list(datos.values())
         valores.append(id_atleta)
-        print(valores)
         sql = f"UPDATE atletas SET {set_query} WHERE id = %s"
         self.execute(sql,tuple(valores))
 
-        sql2 = f"UPDATE atletas SET {set_query} WHERE id = %s"
 
-        
+    def update_info_deportiva(self, id_atleta, datos):
+        columnas = [f"{key} = %s" for key in datos.keys()]
+        set_query = ", ".join(columnas)
+        valores = list(datos.values())
+        valores.append(id_atleta)
+        # Ajuste estándar si la tabla usa id_atleta como llave:
+        sql = f"UPDATE info_depot_atleta SET {set_query} WHERE id_atleta = %s"
+        self.execute(sql, tuple(valores))
+    
+
+    def update_historial_medico(self, id_historial, datos):
+        columnas = [f"{key} = %s" for key in datos.keys()]
+        set_query = ", ".join(columnas)
+        valores = list(datos.values())
+        valores.append(id_historial)
+        sql = f"UPDATE historial_medico SET {set_query} WHERE id = %s"
+        self.execute(sql, tuple(valores))
+
+    def update_usuario(self, id_usuario, datos):
+        columnas = [f"{key} = %s" for key in datos.keys()]
+        set_query = ", ".join(columnas)
+        valores = list(datos.values())
+        valores.append(id_usuario)
+        sql = f"UPDATE usuarios SET {set_query} WHERE id = %s"
+        self.execute(sql, tuple(valores))
 
 
 class ObtenerAtletas(BaseDAO):
 
     def atletas_generales(self):
         query = """
-        Select * from atletas a 
-        join usuarios on  a.id_usuario = usuarios.id
-        join info_depot_atleta on info_depot_atleta.id_atleta = a.id
-        join historial_medico on historial_medico.id_atleta = a.id
+            Select * from atletas a 
+            join usuarios on  a.id_usuario = usuarios.id
+            join info_depot_atleta on info_depot_atleta.id_atleta = a.id
+            join historial_medico on historial_medico.id_atleta = a.id
+            where a.is_player = true
         """
         return self.fetch_all(query)
     

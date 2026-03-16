@@ -131,9 +131,9 @@ class CrudRegistroAtleta(Resource):
     def put(self):
         #datos = {"nombre": 'pepepere'}
         datos = api.payload
-        print(datos)
-        crud_atleta.aleta_update(1, datos)
-        return {"test":"test"}
+        id_dato = datos.get('id')
+        crud_atleta.aleta_update(id_dato, datos)
+        return {"Sucess":"Atleta Actualizado"}
 
 @api.route('/obtener_atletas')
 class ObtenerAtletas(Resource):

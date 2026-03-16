@@ -33,7 +33,8 @@ async function fetchAndMapAthletes() {
             medications: atleta.medicamentos,
             medicalInsurance: true,
             status: atleta.activo,
-            avatarColor: "#3b82f6"
+            avatarColor: "#3b82f6",
+            is_player:atleta.is_player
         }));
     } catch (error) {
         console.error("Error al cargar:", error);
@@ -341,6 +342,15 @@ console.log("Atletas listos para la interfaz:", athletes);
             }
             
             // Fecha del último pago
+            let player = athlete.is_player;
+            
+            if (player == true){
+                player = false
+            }else if (player== false){
+                player = true
+            }
+
+
             const lastPaymentFormatted = athlete.lastPayment ? 
                 formatDate(athlete.lastPayment) : 'Sin pagos';
             
@@ -371,10 +381,8 @@ console.log("Atletas listos para la interfaz:", athletes);
                         <button class="btn-icon" title="Ver perfil" onclick="viewAthleteProfile(${athlete.id})">
                             <i class="fas fa-eye"></i>
                         </button>
-                        <button class="btn-icon" title="Editar" onclick="editAthlete(${athlete.id})">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button class="btn-icon" title="Eliminar" onclick="deleteAthlete(${athlete.id})">
+                        
+                        <button class="btn-icon" title="Eliminar" onclick="deleteAthlete(${athlete.id},${player})">
                             <i class="fas fa-trash"></i>
                         </button>
                     </div>
@@ -662,14 +670,29 @@ console.log("Atletas listos para la interfaz:", athletes);
         if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < joinDate.getDate())) {
             yearsInClub--;
         }
+        let status = athlete.status
+        if (status == true){
+            status = false
+        }else if(status == false){
+            status = true
+        }
+        console.log(status);
         
         return `
+            
             <div class="profile-header">
                 <div class="profile-avatar" style="background-color: ${athlete.avatarColor}">
                     ${initials}
                 </div>
                 <div class="profile-info">
-                    <h2>${athlete.fullName}</h2>
+                    <h2>${athlete.fullName}
+                            <button 
+                                    id="btn-status-${athlete.id}"
+                                    class="btn ${athlete.status ? 'btn-success' : 'btn-danger'}"
+                                    onclick="toggleAthleteStatus(${athlete.id}, ${status})">
+                                    ${athlete.status ? 'Activo' : 'Inactivo'}
+                            </button>
+                    </h2> 
                     <p><strong>${positionText}</strong> • ${teamText}</p>
                     <p>#${athlete.jerseyNumber || 'Sin número'} • ${athlete.height ? athlete.height + ' cm' : ''} ${athlete.weight ? '• ' + athlete.weight + ' kg' : ''}</p>
                     
@@ -923,14 +946,126 @@ console.log("Atletas listos para la interfaz:", athletes);
         document.body.style.overflow = 'hidden';
     };
     
-    window.deleteAthlete = function(id) {
-        if (confirm('¿Está seguro de eliminar este atleta?\nEsta acción no se puede deshacer.')) {
-            const index = athletes.findIndex(a => a.id === id);
-            if (index !== -1) {
-                athletes.splice(index, 1);
-                loadAthletesTable(athletes);
-                showAlert('Atleta eliminado exitosamente', 'success');
+    window.deleteAthlete = async function(id,status) {
+            const accion = status ? 'habilitar' : 'eliminar';
+            const colorBoton = status ? '#28a745' : '#d33';
+
+    // 1. Modal de Confirmación
+    const confirmacion = await Swal.fire({
+        title: `¿Quieres ${accion} a este atleta?`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: colorBoton,
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: `Sí, ${accion}`,
+        cancelButtonText: 'Cancelar'
+    });
+
+if (confirmacion.isConfirmed) {
+
+        paylod = {
+            id:id,
+            is_player:status
             }
+    try {
+            // 3. Enviamos el athleteData al backend
+            const newStatus = status ? 0 : 1;
+            const response = await fetch('/api/v1/atletas/registro_atleta', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(paylod)
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                // 4. Creamos el objeto para la tabla local (con campos extra de UI)
+               console.log(result);
+               Swal.fire({
+                    title: newStatus === 1 ? '¡Eliminado!' : '¡Habilitado!',
+                    text: `El atleta ha sido ${newStatus === 1 ? '¡Eliminado!' : 'activado'} correctamente.`,
+                    icon: 'success',
+                    timer: 2000,
+                    showConfirmButton: false
+                }).then(() => {
+                    location.reload(); // Recargamos para ver el cambio de color en el botón
+                });
+
+
+            } else {
+                alert(`Error: ${result.message}`, 'error');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Error de conexión con el servidor', 'error');
         }
+
+
+}
+          
+          
     };
 });
+
+
+window.toggleAthleteStatus = async function(id, status){
+
+    const accion = status ? 'habilitar' : 'deshabilitar';
+    const colorBoton = status ? '#28a745' : '#d33';
+
+    // 1. Modal de Confirmación
+    const confirmacion = await Swal.fire({
+        title: `¿Quieres ${accion} a este atleta?`,
+        text: "Podrás cambiar su estado nuevamente cuando lo necesites.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: colorBoton,
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: `Sí, ${accion}`,
+        cancelButtonText: 'Cancelar'
+    });
+
+if (confirmacion.isConfirmed) {
+
+        paylod = {
+            id:id,
+            activo:status
+            }
+    try {
+            // 3. Enviamos el athleteData al backend
+            const newStatus = status ? 0 : 1;
+            const response = await fetch('/api/v1/atletas/registro_atleta', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(paylod)
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                // 4. Creamos el objeto para la tabla local (con campos extra de UI)
+               console.log(result);
+               Swal.fire({
+                    title: newStatus === 1 ? '¡Deshabilitado!' : '¡Habilitado!',
+                    text: `El atleta ha sido ${newStatus === 1 ? 'desactivado' : 'activado'} correctamente.`,
+                    icon: 'success',
+                    timer: 2000,
+                    showConfirmButton: false
+                }).then(() => {
+                    location.reload(); // Recargamos para ver el cambio de color en el botón
+                });
+
+
+            } else {
+                alert(`Error: ${result.message}`, 'error');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Error de conexión con el servidor', 'error');
+        }
+
+
+}
+
+
+}
