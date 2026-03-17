@@ -1,108 +1,38 @@
-document.addEventListener('DOMContentLoaded', function() {
-    // Datos de ejemplo para pagos
-    const samplePayments = [
-        {
-            id: 1,
-            athlete: "Ana García",
-            concept: "Mensualidad",
-            dueDate: "2023-10-05",
-            paymentDate: "2023-10-03",
-            amount: 120,
-            method: "Transferencia",
-            status: "paid",
-            notes: "Pago completo"
-        },
-        {
-            id: 2,
-            athlete: "Carlos López",
-            concept: "Mensualidad",
-            dueDate: "2023-10-10",
-            paymentDate: "",
-            amount: 120,
-            method: "Efectivo",
-            status: "pending",
-            notes: ""
-        },
-        {
-            id: 3,
-            athlete: "María Rodríguez",
-            concept: "Uniforme",
-            dueDate: "2023-09-25",
-            paymentDate: "",
-            amount: 85,
-            method: "Tarjeta",
-            status: "overdue",
-            notes: "Pendiente desde septiembre"
-        },
-        {
-            id: 4,
-            athlete: "Javier Pérez",
-            concept: "Mensualidad",
-            dueDate: "2023-10-01",
-            paymentDate: "2023-09-30",
-            amount: 120,
-            method: "Transferencia",
-            status: "paid",
-            notes: ""
-        },
-        {
-            id: 5,
-            athlete: "Laura Martínez",
-            concept: "Inscripción torneo",
-            dueDate: "2023-10-15",
-            paymentDate: "2023-10-10",
-            amount: 200,
-            method: "Transferencia",
-            status: "paid",
-            notes: "Pago adelantado"
-        },
-        {
-            id: 6,
-            athlete: "Diego Sánchez",
-            concept: "Mensualidad",
-            dueDate: "2023-10-12",
-            paymentDate: "",
-            amount: 120,
-            method: "",
-            status: "pending",
-            notes: "Recordar llamar"
-        },
-        {
-            id: 7,
-            athlete: "Sofía Hernández",
-            concept: "Equipo",
-            dueDate: "2023-09-30",
-            paymentDate: "2023-09-28",
-            amount: 65,
-            method: "Efectivo",
-            status: "paid",
-            notes: "Rodilleras nuevas"
-        },
-        {
-            id: 8,
-            athlete: "Pedro Ramírez",
-            concept: "Mensualidad",
-            dueDate: "2023-10-08",
-            paymentDate: "2023-10-08",
-            amount: 120,
-            method: "Tarjeta",
-            status: "paid",
-            notes: ""
-        }
-    ];
+async function fetchAndMapAthletes() {
+    const url = '/api/v1/pagos/registrar_pago';
+    try {
+        const respuesta = await fetch(url);
+        const datosOriginales = await respuesta.json();
 
-    const sampleAthletes = [
-        { id: 1, name: "Ana García", status: "active" },
-        { id: 2, name: "Carlos López", status: "active" },
-        { id: 3, name: "María Rodríguez", status: "active" },
-        { id: 4, name: "Javier Pérez", status: "active" },
-        { id: 5, name: "Laura Martínez", status: "active" },
-        { id: 6, name: "Diego Sánchez", status: "active" },
-        { id: 7, name: "Sofía Hernández", status: "active" },
-        { id: 8, name: "Pedro Ramírez", status: "active" },
-        { id: 9, name: "Elena Castro", status: "active" },
-        { id: 10, name: "Miguel Torres", status: "active" }
-    ];
+        // IMPORTANTE: Mira en la consola cómo se llaman las llaves que vienen del servidor
+        console.log("Datos crudos del servidor:", datosOriginales);
+
+        // Si la respuesta es un objeto que contiene una lista, ajusta: datosOriginales.data.map...
+        return datosOriginales.map(p => ({
+            // Usamos nombres de propiedades que coincidan con lo que definimos en Python
+            id:p.id,
+            athlete: p.nombre_atleta || "Sin nombre", // Verifica si tu query trae el nombre
+            concept: p.concepto || "Pago de mensualidad",
+            dueDate: p.fecha_pago || "Pendiente",
+            paymentDate: p.fecha_pago || "",
+            amount: p.monto || 0,
+            method: p.metodo || "N/A",
+            status: p.estado || "pendiente",
+            notes: p.comentario || ""
+        }));
+    } catch (error) {
+        console.error("Error al cargar:", error);
+        return []; 
+    }
+}
+
+document.addEventListener('DOMContentLoaded',async function() {
+    // Datos de ejemplo para pagos
+    const respuesta = await fetchAndMapAthletes()
+    const samplePayments = [...respuesta]
+    console.log(samplePayments);
+    
+
 
     // Elementos del DOM
     const paymentsTableBody = document.getElementById('paymentsTableBody');
@@ -153,12 +83,11 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Enviar formulario de pago
-    paymentForm.addEventListener('submit', (e) => {
+    paymentForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         
         // Obtener datos del formulario
-        const athleteId = parseInt(athleteSelect.value);
-        const athleteName = athleteSelect.options[athleteSelect.selectedIndex].text;
+        const athleteId = 13;
         const amount = parseFloat(document.getElementById('paymentAmount').value);
         const concept = document.getElementById('paymentConcept').value;
         const method = document.getElementById('paymentMethod').value;
@@ -174,20 +103,70 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         // Crear nuevo pago
-        const newPayment = {
-            id: samplePayments.length + 1,
-            athlete: athleteName,
-            concept: getConceptText(concept),
-            dueDate: dueDate || getNextMonthFirstDay(),
-            paymentDate: markAsPaid ? (paymentDate || getTodayDate()) : '',
-            amount: amount,
-            method: getMethodText(method),
-            status: markAsPaid ? 'paid' : 'pending',
-            notes: notes
-        };
+        const payload = {
+        id_atleta: athleteId,
+        id_club: 1, // ¿Viene de algún lado? Si no, pon el ID por defecto de tu club
+        monto: amount,
+        fecha_pago: paymentDate,
+        referencia: "REF-" + Date.now(), // Generamos una referencia temporal o pídela en un input
+        metodo: method,
+        comprobante_url: "", // Aquí iría la URL si subes un archivo
+        estado: markAsPaid ? 'pagado' : 'pendiente',
+        comentario: notes,
+        concepto: concept
+    };
         
-        // Agregar a la lista (en un sistema real, esto se enviaría al backend)
-        samplePayments.unshift(newPayment);
+        try {
+        // 4. Realizar la petición al servidor
+        const response = await fetch('/api/v1/pagos/registrar_pago', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+            // 5. Si el backend responde bien, actualizamos la UI local
+            const newPaymentUI = {
+                id: result.id || (samplePayments.length + 1), // Usamos el ID que viene del backend
+                concept: concept,
+                dueDate: dueDate || "Próximo mes",
+                paymentDate: payload.fecha_pago || '',
+                amount: amount,
+                method: method,
+                status: payload.estado,
+                notes: notes
+            };
+
+            samplePayments.unshift(newPaymentUI);
+            
+            // Refrescar componentes visuales
+            loadPayments(samplePayments);
+            updateStats(samplePayments);
+            
+            // Cerrar modal y limpiar
+            paymentModal.classList.remove('active');
+            document.body.style.overflow = 'auto';
+            paymentForm.reset();
+            
+            showAlert('Pago registrado en el servidor exitosamente', 'success');
+            updateNotificationBadge();
+        } else {
+            // Manejar errores del servidor (ej. error 400 o 500)
+            showAlert('Error del servidor: ' + (result.message || 'No se pudo registrar'), 'error');
+        }
+    } catch (error) {
+        // Manejar errores de red o si el servidor está apagado
+        console.error('Error en la petición:', error);
+        showAlert('No se pudo conectar con el servidor', 'error');
+    }
+
+
+
+
         
         // Actualizar la tabla
         loadPayments(samplePayments);
@@ -254,15 +233,15 @@ document.addEventListener('DOMContentLoaded', function() {
             // Determinar clase de estado
             let statusClass, statusText;
             switch(payment.status) {
-                case 'paid':
+                case 'pagado':
                     statusClass = 'status-paid';
                     statusText = 'Pagado';
                     break;
-                case 'pending':
+                case 'pendiente':
                     statusClass = 'status-pending';
                     statusText = 'Pendiente';
                     break;
-                case 'overdue':
+                case 'atrasado':
                     statusClass = 'status-overdue';
                     statusText = 'Atrasado';
                     break;
@@ -272,12 +251,11 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             row.innerHTML = `
-                <td>#${payment.id.toString().padStart(3, '0')}</td>
-                <td><strong>${payment.athlete}</strong></td>
+                
                 <td>${payment.concept}</td>
                 <td>${dueDateFormatted}</td>
                 <td>${paymentDateFormatted}</td>
-                <td><strong>$${payment.amount.toFixed(2)}</strong></td>
+                <td><strong>$${payment.amount}</strong></td>
                 <td>${payment.method || '-'}</td>
                 <td><span class="status-badge ${statusClass}">${statusText}</span></td>
                 <td>
@@ -435,20 +413,38 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Funciones globales para acciones de la tabla
-    window.viewPayment = function(id) {
-        const payment = samplePayments.find(p => p.id === id);
-        if (payment) {
-            alert(`Detalles del Pago #${id}:\n\n` +
-                  `Atleta: ${payment.athlete}\n` +
-                  `Concepto: ${payment.concept}\n` +
-                  `Monto: $${payment.amount}\n` +
-                  `Estado: ${payment.status}\n` +
-                  `Fecha Vencimiento: ${formatDate(payment.dueDate)}\n` +
-                  `Fecha Pago: ${payment.paymentDate ? formatDate(payment.paymentDate) : 'Pendiente'}\n` +
-                  `Método: ${payment.method || 'No especificado'}\n` +
-                  `Notas: ${payment.notes || 'Ninguna'}`);
-        }
-    };
+window.viewPayment = function(id) {
+    // Buscamos el pago en nuestro array global
+    const payment = samplePayments.find(p => p.id === id);
+
+    if (payment) {
+        // Determinamos el color del estado para el diseño
+        const statusColor = payment.status === 'pagado' || payment.status === 'paid' ? '#28a745' : '#ffc107';
+        
+        Swal.fire({
+            title: `<strong>Detalles del Pago #${id}</strong>`,
+            icon: 'info',
+            html: `
+                <div style="text-align: left; line-height: 1.6;">
+                    
+                    <p><strong>Concepto:</strong> ${payment.concept}</p>
+                    <p><strong>Monto:</strong> <span style="color: #28a745; font-weight: bold;">$${payment.amount}</span></p>
+                    <p><strong>Estado:</strong> <span style="background: ${statusColor}; color: white; padding: 2px 8px; border-radius: 4px;">${payment.status.toUpperCase()}</span></p>
+                    <hr>
+                    <p><strong>Vencimiento:</strong> ${formatDate(payment.dueDate)}</p>
+                    <p><strong>Fecha de Pago:</strong> ${payment.paymentDate ? formatDate(payment.paymentDate) : '<span style="color: red;">Pendiente</span>'}</p>
+                    <p><strong>Método:</strong> ${payment.method || 'No especificado'}</p>
+                    <p><strong>Notas:</strong> <em>${payment.notes || 'Ninguna'}</em></p>
+                </div>
+            `,
+            showCloseButton: true,
+            confirmButtonText: '<i class="fa fa-thumbs-up"></i> Entendido',
+            confirmButtonColor: '#3085d6'
+        });
+    } else {
+        Swal.fire('Error', 'No se encontró la información del pago', 'error');
+    }
+};
 
     window.editPayment = function(id) {
         const payment = samplePayments.find(p => p.id === id);

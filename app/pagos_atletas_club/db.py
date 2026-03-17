@@ -1,17 +1,42 @@
 from modelClass.BaseDAO import WriteDAO, BaseDAO
 
 class RegistroPagos(WriteDAO):
-    def insert_pago(self,id_atleta, id_club, monto, fecha_pago, referencia, metodo, comprobante_url, estado, fecha_reporte):
+    def insert_pago(self, datos):
         query = """
-        insert into pagos (id_atleta, id_club, monto, fecha_pago, referencia, metodo, comprobante_url, estado, fecha_reporte)
-         VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s) RETURNING id
+            INSERT INTO pagos (
+                id_atleta, id_club, monto, fecha_pago, referencia, 
+                metodo, comprobante_url, estado, concepto
+            )
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s) 
+            RETURNING id
         """
-        return self.insert_and_return_id(query, (id_atleta, id_club, monto, fecha_pago, referencia, metodo, comprobante_url, estado, fecha_reporte))
+        params = (
+            datos.get('id_atleta'),
+            datos.get('id_club'),
+            datos.get('monto'),
+            datos.get('fecha_pago'),
+            datos.get('referencia'),
+            datos.get('metodo'),
+            datos.get('comprobante_url'),
+            datos.get('estado'),
+            datos.get('concepto')
+        )
+        return self.insert_and_return_id(query, params)
 
-    
     def historial(self, id_pago, estado, comentario):
         query = """
-            insert into pagos_historial (id_pago, estado, comentario) VALUES (%s,%s,%)
-                """
+            INSERT INTO pagos_historial (id_pago, estado, comentario) 
+            VALUES (%s, %s, %s)
+        """
+        return self.execute(query, (id_pago, estado, comentario))
 
-        return self.execute(query ,(id_pago, estado, comentario))
+
+class VerPagos(BaseDAO):
+
+    def pagos_registrados(self):
+        query = """
+                select p.id ,ph.comentario, p.fecha_pago , p.monto, p.metodo, p.estado, p.concepto  from pagos p 
+                join pagos_historial ph on ph.id_pago = p.id
+                """
+        return self.fetch_all(query)
+    
