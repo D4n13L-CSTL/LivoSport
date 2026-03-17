@@ -202,13 +202,7 @@
                         <textarea id="paymentNotes" rows="3" placeholder="Observaciones sobre el pago..."></textarea>
                     </div>
                     
-                    <div class="form-group">
-                        <label class="checkbox-label">
-                            <input type="checkbox" id="markAsPaid">
-                            <span class="checkmark"></span>
-                            Marcar como pagado
-                        </label>
-                    </div>
+                    
                     
                     <div class="modal-actions">
                         <button type="button" class="btn-secondary close-modal">Cancelar</button>
@@ -225,7 +219,6 @@
      <script>
         const idClubActual = {{ club.id | tojson }};
         const idAtletaActual = {{ club.id_atleta | tojson }};
-        console.log(idAtletaActual);
         
      </script>
      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

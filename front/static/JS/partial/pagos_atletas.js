@@ -95,7 +95,6 @@ document.addEventListener('DOMContentLoaded',async function() {
         const dueDate = document.getElementById('dueDate').value;
         const paymentDate = document.getElementById('paymentDate').value;
         const notes = document.getElementById('paymentNotes').value;
-        const markAsPaid = document.getElementById('markAsPaid').checked;
         const ref = document.getElementById('referencia').value;
         // Validaciones
         if (!athleteId || !amount || !concept || !method) {
@@ -112,7 +111,7 @@ document.addEventListener('DOMContentLoaded',async function() {
         referencia: ref, // Generamos una referencia temporal o pídela en un input
         metodo: method,
         comprobante_url: "", // Aquí iría la URL si subes un archivo
-        estado: markAsPaid ? 'pagado' : 'pendiente',
+        estado: 'pendiente' ,
         comentario: notes,
         concepto: concept
     };
@@ -453,7 +452,6 @@ window.viewPayment = function(id) {
             document.getElementById('dueDate').value = payment.dueDate;
             document.getElementById('paymentDate').value = payment.paymentDate || '';
             document.getElementById('paymentNotes').value = payment.notes || '';
-            document.getElementById('markAsPaid').checked = payment.status === 'paid';
             
             // Establecer atleta (necesitaríamos el ID)
             // Por simplicidad, solo abrimos el modal
@@ -477,7 +475,6 @@ window.viewPayment = function(id) {
                 payment.dueDate = document.getElementById('dueDate').value;
                 payment.paymentDate = document.getElementById('paymentDate').value || '';
                 payment.notes = document.getElementById('paymentNotes').value;
-                payment.status = document.getElementById('markAsPaid').checked ? 'paid' : 'pending';
                 
                 // Actualizar tabla
                 loadPayments(samplePayments);
