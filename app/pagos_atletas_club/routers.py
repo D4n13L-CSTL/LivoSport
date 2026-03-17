@@ -35,3 +35,18 @@ class RoutePagos(Resource):
         id = request.args.get('atleta')
         pagos = service_pago.ver_pagos(id)
         return make_response(jsonify(pagos))
+   
+    
+@api.route('/obtener')
+class PagosGenerales(Resource):
+    
+    def get(self):
+
+        pagos = service_pago.pagos_genarales()
+        return make_response(jsonify(pagos))
+
+    def put(self):
+        datos = api.payload
+        id_pago = datos.get('id')
+        service_pago.update_pago(id_pago,datos)
+        return {"datos":datos}

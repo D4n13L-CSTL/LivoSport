@@ -1,3 +1,5 @@
+from utils import update_tables_utils
+
 
 
 class ServiceRegistrarPago:
@@ -20,3 +22,15 @@ class ServiceRegistrarPago:
     def ver_pagos(self,id_atleta):
 
         return self.get_pagos_dao.pagos_registrados(id_atleta)
+    
+
+    
+    def pagos_genarales(self):
+        return self.get_pagos_dao.pagos_generales()
+    
+
+
+
+    def update_pago(self,parametro,datos):
+        tabla = 'pagos'
+        return update_tables_utils.update_usuario(tabla, parametro, datos)

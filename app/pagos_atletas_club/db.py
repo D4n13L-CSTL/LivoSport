@@ -31,6 +31,15 @@ class RegistroPagos(WriteDAO):
         return self.execute(query, (id_pago, estado, comentario))
 
 
+
+    def update_estado_pago(self):
+        pass
+
+
+
+
+
+
 class VerPagos(BaseDAO):
 
     def pagos_registrados(self, id_atleta):
@@ -41,3 +50,11 @@ class VerPagos(BaseDAO):
                 """
         return self.fetch_all(query, (id_atleta,))
     
+
+    def pagos_generales(self):
+        query = """
+                select a.nombre,a.apellido,p.id ,ph.comentario, p.fecha_pago , p.monto, p.metodo, p.estado, p.concepto , p.referencia from pagos p 
+                join pagos_historial ph on ph.id_pago = p.id
+                join atletas a on a.id = p.id_atleta
+                """
+        return self.fetch_all(query)
