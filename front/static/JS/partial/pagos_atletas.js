@@ -234,7 +234,7 @@ document.addEventListener('DOMContentLoaded',async function() {
             // Determinar clase de estado
             let statusClass, statusText;
             switch(payment.status) {
-                case 'pagado':
+                case 'aprobado':
                     statusClass = 'status-paid';
                     statusText = 'Pagado';
                     break;
