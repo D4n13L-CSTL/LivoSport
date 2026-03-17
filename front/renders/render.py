@@ -35,11 +35,11 @@ def render_pagos():
     username = session['usuario']
     cedula = session.get('cedula')
     print(cedula)
-    a = 'hola'
+
     if tipo_user == 'atleta':
-        club_perteneciente = club_utils.club_perte(cedula)[0].get('nombre')
+        club_perteneciente = club_utils.club_perte(cedula)
         
-        return make_response(render_template('user/pago_user_atleta.html', username = username, club =club_perteneciente), 200)
+        return make_response(render_template('user/pago_user_atleta.html', username = username, club =club_perteneciente[0]), 200)
     else:
         return make_response(render_template('pages/pagos.html'), 200)
 

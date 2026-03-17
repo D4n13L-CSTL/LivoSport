@@ -1,5 +1,5 @@
-async function fetchAndMapAthletes() {
-    const url = '/api/v1/pagos/registrar_pago';
+async function fetchAndMapAthletes(id) {
+    const url = `/api/v1/pagos/registrar_pago?atleta=${id}`;
     try {
         const respuesta = await fetch(url);
         const datosOriginales = await respuesta.json();
@@ -18,7 +18,8 @@ async function fetchAndMapAthletes() {
             amount: p.monto || 0,
             method: p.metodo || "N/A",
             status: p.estado || "pendiente",
-            notes: p.comentario || ""
+            notes: p.comentario || "",
+            referencia :p.referencia
         }));
     } catch (error) {
         console.error("Error al cargar:", error);
@@ -28,7 +29,7 @@ async function fetchAndMapAthletes() {
 
 document.addEventListener('DOMContentLoaded',async function() {
     // Datos de ejemplo para pagos
-    const respuesta = await fetchAndMapAthletes()
+    const respuesta = await fetchAndMapAthletes(idAtletaActual)
     const samplePayments = [...respuesta]
     console.log(samplePayments);
     
@@ -87,7 +88,7 @@ document.addEventListener('DOMContentLoaded',async function() {
         e.preventDefault();
         
         // Obtener datos del formulario
-        const athleteId = 13;
+        const athleteId = idAtletaActual;
         const amount = parseFloat(document.getElementById('paymentAmount').value);
         const concept = document.getElementById('paymentConcept').value;
         const method = document.getElementById('paymentMethod').value;
@@ -95,7 +96,7 @@ document.addEventListener('DOMContentLoaded',async function() {
         const paymentDate = document.getElementById('paymentDate').value;
         const notes = document.getElementById('paymentNotes').value;
         const markAsPaid = document.getElementById('markAsPaid').checked;
-        
+        const ref = document.getElementById('referencia').value;
         // Validaciones
         if (!athleteId || !amount || !concept || !method) {
             showAlert('Por favor complete todos los campos requeridos', 'error');
@@ -105,10 +106,10 @@ document.addEventListener('DOMContentLoaded',async function() {
         // Crear nuevo pago
         const payload = {
         id_atleta: athleteId,
-        id_club: 1, // ¿Viene de algún lado? Si no, pon el ID por defecto de tu club
+        id_club: idClubActual, // ¿Viene de algún lado? Si no, pon el ID por defecto de tu club
         monto: amount,
         fecha_pago: paymentDate,
-        referencia: "REF-" + Date.now(), // Generamos una referencia temporal o pídela en un input
+        referencia: ref, // Generamos una referencia temporal o pídela en un input
         metodo: method,
         comprobante_url: "", // Aquí iría la URL si subes un archivo
         estado: markAsPaid ? 'pagado' : 'pendiente',
@@ -263,12 +264,7 @@ document.addEventListener('DOMContentLoaded',async function() {
                         <button class="btn-icon" title="Ver detalles" onclick="viewPayment(${payment.id})">
                             <i class="fas fa-eye"></i>
                         </button>
-                        <button class="btn-icon" title="Editar" onclick="editPayment(${payment.id})">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button class="btn-icon" title="Eliminar" onclick="deletePayment(${payment.id})">
-                            <i class="fas fa-trash"></i>
-                        </button>
+                        
                     </div>
                 </td>
             `;
@@ -435,6 +431,7 @@ window.viewPayment = function(id) {
                     <p><strong>Fecha de Pago:</strong> ${payment.paymentDate ? formatDate(payment.paymentDate) : '<span style="color: red;">Pendiente</span>'}</p>
                     <p><strong>Método:</strong> ${payment.method || 'No especificado'}</p>
                     <p><strong>Notas:</strong> <em>${payment.notes || 'Ninguna'}</em></p>
+                    <p><strong>REF:</strong> <em>${payment.referencia || 'Ninguna'}</em></p>
                 </div>
             `,
             showCloseButton: true,

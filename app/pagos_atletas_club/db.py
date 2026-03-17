@@ -33,10 +33,11 @@ class RegistroPagos(WriteDAO):
 
 class VerPagos(BaseDAO):
 
-    def pagos_registrados(self):
+    def pagos_registrados(self, id_atleta):
         query = """
-                select p.id ,ph.comentario, p.fecha_pago , p.monto, p.metodo, p.estado, p.concepto  from pagos p 
+                select p.id ,ph.comentario, p.fecha_pago , p.monto, p.metodo, p.estado, p.concepto, p.referencia from pagos p 
                 join pagos_historial ph on ph.id_pago = p.id
+                where p.id_atleta = %s
                 """
-        return self.fetch_all(query)
+        return self.fetch_all(query, (id_atleta,))
     

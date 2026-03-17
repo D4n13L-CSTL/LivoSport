@@ -17,6 +17,6 @@ class ServiceRegistrarPago:
 
         return {"success": True, "id_pago": id_pago}
     
-    def ver_pagos(self):
+    def ver_pagos(self,id_atleta):
 
-        return self.get_pagos_dao.pagos_registrados()
+        return self.get_pagos_dao.pagos_registrados(id_atleta)

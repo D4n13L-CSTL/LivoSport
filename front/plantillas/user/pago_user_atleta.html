@@ -18,15 +18,18 @@
             <!-- Header -->
             <header class="header">
                 <div class="header-left">
-                    <h1>Gestión de Pagos - Club <span>{{club}}</span></h1>
+                    <h1>Gestión de Pagos - Club <span>{{club.nombre}}</span></h1>
                 </div>
                 <div class="header-right">
-                    <div class="notification-icon">
-                        <i class="fas fa-bell"></i>
-                        <span class="notification-badge">3</span>
-                    </div>
+                    
                     <div class="user-profile">
-                        <div class="avatar">AJ</div>
+                        <div class="avatar">
+                            {% if username %}
+                                {{ username[0] | upper }}
+                            {% else 4 %}
+                                U
+                            {% endif %}
+                        </div>
                         <div class="user-info">
                             <h4>Admin User</h4>
                             <p>{{username}}</p>
@@ -36,50 +39,7 @@
             </header>
             
             <!-- Área de Contenido -->
-            <div class="content-area">
-                <!-- Sección de Estadísticas -->
-                <div class="stats-row">
-                    <div class="stat-card">
-                        <div class="stat-icon" style="background-color: #10b981;">
-                            <i class="fas fa-check-circle"></i>
-                        </div>
-                        <div class="stat-info">
-                            <h3>$4,850</h3>
-                            <p>Pagado este mes</p>
-                        </div>
-                    </div>
-                    
-                    <div class="stat-card">
-                        <div class="stat-icon" style="background-color: #f59e0b;">
-                            <i class="fas fa-clock"></i>
-                        </div>
-                        <div class="stat-info">
-                            <h3>$1,250</h3>
-                            <p>Pendiente</p>
-                        </div>
-                    </div>
-                    
-                    <div class="stat-card">
-                        <div class="stat-icon" style="background-color: #ef4444;">
-                            <i class="fas fa-exclamation-circle"></i>
-                        </div>
-                        <div class="stat-info">
-                            <h3>8</h3>
-                            <p>Pagos atrasados</p>
-                        </div>
-                    </div>
-                    
-                    <div class="stat-card">
-                        <div class="stat-icon" style="background-color: #8b5cf6;">
-                            <i class="fas fa-user-check"></i>
-                        </div>
-                        <div class="stat-info">
-                            <h3>18</h3>
-                            <p>Al día con pagos</p>
-                        </div>
-                    </div>
-                </div>
-                
+            <div class="content-area">    
                 <!-- Panel Principal de Pagos -->
                 <div class="content-panel">
                     <div class="panel-header">
@@ -170,54 +130,7 @@
                 </div>
                 
                 <!-- Panel de Resumen -->
-                <div class="summary-panel">
-                    <h3>Resumen de Pagos</h3>
-                    <div class="summary-item">
-                        <span>Total Recaudado:</span>
-                        <strong>$12,450</strong>
-                    </div>
-                    <div class="summary-item">
-                        <span>Pagos este mes:</span>
-                        <strong>$4,850</strong>
-                    </div>
-                    <div class="summary-item">
-                        <span>Promedio por atleta:</span>
-                        <strong>$120/mes</strong>
-                    </div>
-                    <div class="summary-item">
-                        <span>Próximo vencimiento:</span>
-                        <strong class="due-soon">15 Oct</strong>
-                    </div>
-                    
-                    <div class="progress-section">
-                        <div class="progress-header">
-                            <span>Tasa de pagos completos</span>
-                            <span>78%</span>
-                        </div>
-                        <div class="progress-bar">
-                            <div class="progress-fill" style="width: 78%"></div>
-                        </div>
-                    </div>
-                    
-                    <div class="payment-methods">
-                        <h4>Métodos de Pago Más Usados</h4>
-                        <div class="method-item">
-                            <i class="fas fa-university"></i>
-                            <span>Transferencia</span>
-                            <span class="method-count">45%</span>
-                        </div>
-                        <div class="method-item">
-                            <i class="fas fa-credit-card"></i>
-                            <span>Tarjeta</span>
-                            <span class="method-count">30%</span>
-                        </div>
-                        <div class="method-item">
-                            <i class="fas fa-money-bill-wave"></i>
-                            <span>Efectivo</span>
-                            <span class="method-count">25%</span>
-                        </div>
-                    </div>
-                </div>
+                
             </div>
         </main>
     </div>
@@ -232,18 +145,16 @@
             <div class="modal-body">
                 <form id="paymentForm">
                     <div class="form-row">
-                        
+                        <div class="form-group">
+                            <label for="referencia">Referencia *</label>
+                            <input type="text" id="referencia" placeholder="REF"  required>
+                        </div>
                         
                         <div class="form-group">
                             <label for="paymentAmount">Monto *</label>
                             <div class="input-with-prefix">
                                 <span>$</span>
                                 <input type="number" id="paymentAmount" placeholder="0.00" step="0.01" min="0" required>
-                            </div>
-                            <label for="referencia">Ref</label>
-                            <div class="input-with-prefix">
-                                <span>$</span>
-                                <input type="text" id="referencia" placeholder="REF"  required>
                             </div>
                         </div>
                     </div>
@@ -311,6 +222,12 @@
     </div>
     
     <!-- Scripts -->
+     <script>
+        const idClubActual = {{ club.id | tojson }};
+        const idAtletaActual = {{ club.id_atleta | tojson }};
+        console.log(idAtletaActual);
+        
+     </script>
      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>

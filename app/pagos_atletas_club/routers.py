@@ -1,6 +1,6 @@
 from flask_restx import Resource
 from .documentation import *
-from flask import make_response, jsonify
+from flask import make_response, jsonify, request
 from flask_jwt_extended import jwt_required
 from . import service_pago
 
@@ -32,6 +32,6 @@ class RoutePagos(Resource):
         },
 
     def get(self):
-
-        pagos = service_pago.ver_pagos()
+        id = request.args.get('atleta')
+        pagos = service_pago.ver_pagos(id)
         return make_response(jsonify(pagos))
