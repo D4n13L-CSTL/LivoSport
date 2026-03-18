@@ -40,7 +40,6 @@ document.addEventListener('DOMContentLoaded', async function() {
     // Elementos del DOM
     const paymentsTableBody = document.getElementById('paymentsTableBody');
     const paymentModal = document.getElementById('paymentModal');
-    const openPaymentModalBtn = document.getElementById('openPaymentModal');
     const closeModalBtns = document.querySelectorAll('.close-modal');
     const paymentForm = document.getElementById('paymentForm');
     const athleteSelect = document.getElementById('athleteSelect');
@@ -61,10 +60,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     updateStats(samplePayments);
 
     // Abrir modal de nuevo pago
-    openPaymentModalBtn.addEventListener('click', () => {
-        paymentModal.classList.add('active');
-        document.body.style.overflow = 'hidden';
-    });
+
 
     // Cerrar modal
     closeModalBtns.forEach(btn => {
@@ -512,3 +508,63 @@ window.editPayment = function(id) {
         return methodMap[methodText] || '';
     }
 });
+
+async function cargarEstadisticas() {
+    try {
+        const response = await fetch('/api/v1/pagos/obtener');
+        const pagos = await response.json();
+
+        const ahora = new Date();
+        const mesActual = ahora.getMonth();
+        const añoActual = ahora.getFullYear();
+
+        // 1. Calcular "Pagado este mes"
+        const pagadoEsteMes = pagos.reduce((total, pago) => {
+            const fechaPago = new Date(pago.fecha_pago);
+            if (
+                pago.estado === 'aprobado' &&
+                fechaPago.getMonth() === mesActual &&
+                fechaPago.getFullYear() === añoActual
+            ) {
+                return total + parseFloat(pago.monto);
+            }
+            return total;
+        }, 0);
+
+        // 2. Calcular "Al día con pagos" (Usuarios únicos con pagos este mes)
+        const usuariosAlDia = new Set(
+            pagos
+                .filter(pago => {
+                    const fecha = new Date(pago.fecha_pago);
+                    return fecha.getMonth() === mesActual && fecha.getFullYear() === añoActual;
+                })
+                .map(pago => `${pago.nombre} ${pago.apellido}`)
+        ).size;
+
+        // 3. Pendientes (Lógica de ejemplo)
+        // Nota: Si el API no devuelve los pendientes, esto suele ser 
+        // una resta entre el (Monto Esperado Total - pagadoEsteMes)
+        const montoEsperado = 10000; // Ejemplo
+        const pendiente = montoEsperado - pagadoEsteMes;
+
+        // Actualizar el DOM
+        actualizarUI(pagadoEsteMes, pendiente, usuariosAlDia);
+
+    } catch (error) {
+        console.error("Error cargando estadísticas:", error);
+    }
+}
+
+function actualizarUI(pagado, pendiente, alDia) {
+    // Formateador de moneda
+    const formatter = new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+    });
+
+    // Asumiendo que les pones IDs a tus h3 en el HTML
+    document.getElementById('stat-pagado').innerText = formatter.format(pagado);
+    document.getElementById('stat-aldia').innerText = alDia;
+}
+
+cargarEstadisticas();

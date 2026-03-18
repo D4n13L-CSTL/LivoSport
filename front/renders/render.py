@@ -34,6 +34,7 @@ def render_pagos():
     tipo_user = session['tipo_user']
     username = session['usuario']
     cedula = session.get('cedula')
+    id_club = session.get('id_club')
     print(cedula)
 
     if tipo_user == 'atleta':
