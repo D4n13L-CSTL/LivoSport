@@ -1,4 +1,4 @@
-async function fetchAndMapAthletes() {
+async function fetchAndMapPagos() {
     const url = `/api/v1/pagos/obtener`;
     try {
         const respuesta = await fetch(url);
@@ -30,7 +30,7 @@ async function fetchAndMapAthletes() {
 
 document.addEventListener('DOMContentLoaded', async function() {
     // Datos de ejemplo para pagos
-    const respuesta = await fetchAndMapAthletes()
+    const respuesta = await fetchAndMapPagos()
     const samplePayments = [...respuesta]
     
   

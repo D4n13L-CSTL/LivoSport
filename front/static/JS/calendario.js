@@ -1,108 +1,42 @@
-document.addEventListener('DOMContentLoaded', function() {
+async function fetchAndMapEventos() {
+    const url = `/api/v1/eventos/ver`;
+    try {
+        const respuesta = await fetch(url);
+        const datosOriginales = await respuesta.json();
+
+        // IMPORTANTE: Mira en la consola cómo se llaman las llaves que vienen del servidor
+        console.log("Datos crudos del servidor:", datosOriginales);
+
+        // Si la respuesta es un objeto que contiene una lista, ajusta: datosOriginales.data.map...
+        return datosOriginales.map(e => ({
+            // Usamos nombres de propiedades que coincidan con lo que definimos en Python
+            id: e.id,
+            title:e.titulo,
+            type:e.tipo,
+            date:e.fecha,
+            startTime:e.hora_ini,
+            endTime:e.hora_fin,
+            location: e.ubicacion,
+            teams:e.equipo ,
+            description: e.descripcion,
+            color: "#3b82f6"
+        }));
+    } catch (error) {
+        console.error("Error al cargar:", error);
+        return []; 
+    }
+}
+
+
+document.addEventListener('DOMContentLoaded', async function() {
     // Variables globales
     let currentDate = new Date();
     let events = [];
     let editingEventId = null;
 
     // Datos de ejemplo para eventos
-    const sampleEvents = [
-        {
-            id: 1,
-            title: "Entrenamiento Matutino",
-            type: "training",
-            date: "2023-10-16",
-            startTime: "08:00",
-            endTime: "10:00",
-            location: "Cancha Principal",
-            teams: "Equipo Sub-18",
-            description: "Entrenamiento de técnica y resistencia",
-            color: "#3b82f6"
-        },
-        {
-            id: 2,
-            title: "Partido vs Leones",
-            type: "game",
-            date: "2023-10-21",
-            startTime: "15:00",
-            endTime: "17:00",
-            location: "Gimnasio Municipal",
-            teams: "Equipo Principal vs Leones",
-            description: "Partido de liga regular",
-            color: "#ef4444"
-        },
-        {
-            id: 3,
-            title: "Reunión de Padres",
-            type: "meeting",
-            date: "2023-10-25",
-            startTime: "19:00",
-            endTime: "20:30",
-            location: "Sala de Conferencias",
-            teams: "Padres de atletas Sub-18",
-            description: "Reunión informativa sobre próximo torneo",
-            color: "#8b5cf6"
-        },
-        {
-            id: 4,
-            title: "Torneo Juvenil",
-            type: "event",
-            date: "2023-10-28",
-            startTime: "09:00",
-            endTime: "18:00",
-            location: "Complejo Deportivo",
-            teams: "Todos los equipos juveniles",
-            description: "Torneo regional juvenil",
-            color: "#10b981"
-        },
-        {
-            id: 5,
-            title: "Entrenamiento Técnico",
-            type: "training",
-            date: "2023-10-18",
-            startTime: "17:00",
-            endTime: "19:00",
-            location: "Cancha 2",
-            teams: "Equipo Femenino",
-            description: "Técnica de saque y recepción",
-            color: "#3b82f6"
-        },
-        {
-            id: 6,
-            title: "Partido Amistoso",
-            type: "game",
-            date: "2023-10-30",
-            startTime: "16:00",
-            endTime: "18:00",
-            location: "Polideportivo",
-            teams: "Equipo Principal vs Águilas",
-            description: "Partido amistoso de preparación",
-            color: "#ef4444"
-        },
-        {
-            id: 7,
-            title: "Sesión de Video",
-            type: "meeting",
-            date: "2023-10-19",
-            startTime: "18:00",
-            endTime: "19:30",
-            location: "Sala de Reuniones",
-            teams: "Equipo Principal",
-            description: "Análisis de partidos anteriores",
-            color: "#8b5cf6"
-        },
-        {
-            id: 8,
-            title: "Clínica de Voleibol",
-            type: "event",
-            date: "2023-11-02",
-            startTime: "10:00",
-            endTime: "16:00",
-            location: "Gimnasio Principal",
-            teams: "Todos los niveles",
-            description: "Clínica con entrenador invitado",
-            color: "#10b981"
-        }
-    ];
+
+    const sampleEvents = await fetchAndMapEventos();
 
     // Inicializar eventos
     events = [...sampleEvents];
@@ -122,7 +56,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const eventDateInput = document.getElementById('eventDate');
     const startTimeInput = document.getElementById('startTime');
     const endTimeInput = document.getElementById('endTime');
-    const allDayCheckbox = document.getElementById('allDayEvent');
+    // allDayCheckbox = document.getElementById('allDayEvent');
     const filterCheckboxes = document.querySelectorAll('.filter-checkbox input');
     const eventsListContainer = document.getElementById('eventsList');
 
@@ -152,7 +86,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Manejar checkbox "Todo el día"
-    allDayCheckbox.addEventListener('change', function() {
+   /* allDayCheckbox.addEventListener('change', function() {
         if (this.checked) {
             startTimeInput.disabled = true;
             endTimeInput.disabled = true;
@@ -162,7 +96,7 @@ document.addEventListener('DOMContentLoaded', function() {
             startTimeInput.disabled = false;
             endTimeInput.disabled = false;
         }
-    });
+    });*/
 
     // Inicializar calendario
     updateCalendar();
@@ -249,77 +183,86 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Enviar formulario de evento
-    eventForm.addEventListener('submit', (e) => {
-        e.preventDefault();
+eventForm.addEventListener('submit', async (e) => { // Agregamos async aquí
+    e.preventDefault();
+    
+    // 1. Obtener datos del formulario
+    // Asegúrate de tener los IDs correctos para hora_ini y hora_fin en tu HTML
+    const eventData = {
+        titulo: document.getElementById('eventTitle').value,
+        tipo: document.getElementById('eventType').value,
+        fecha: eventDateInput.value,
+        ubicacion: document.getElementById('eventLocation').value,
+        equipo: document.getElementById('eventTeams').value,
+        descripcion: document.getElementById('eventDescription').value,
+        hora_ini: document.getElementById('eventStartTime')?.value || "00:00",
+        hora_fin: document.getElementById('eventEndTime')?.value || "00:00",
+        id_club: 1 // ID estático según tu requerimiento
+    };
+    
+    // Validaciones básicas
+    if (!eventData.titulo || !eventData.tipo || !eventData.fecha) {
+        showAlert('Por favor complete los campos requeridos', 'error');
+        return;
+    }
+
+    try {
+        // 2. Determinar si es Crear o Editar (Configuración de la petición)
+        let url = '/api/v1/eventos/';
+        let method = 'POST';
+
+        // Si estás editando, podrías necesitar cambiar el método a PUT y la URL
         
-        // Obtener datos del formulario
-        const eventData = {
-            title: document.getElementById('eventTitle').value,
-            type: document.getElementById('eventType').value,
-            date: eventDateInput.value,
-            startTime: allDayCheckbox.checked ? '' : startTimeInput.value,
-            endTime: allDayCheckbox.checked ? '' : endTimeInput.value,
-            location: document.getElementById('eventLocation').value,
-            teams: document.getElementById('eventTeams').value,
-            description: document.getElementById('eventDescription').value,
-            allDay: allDayCheckbox.checked
-        };
-        
-        // Validaciones
-        if (!eventData.title || !eventData.type || !eventData.date) {
-            showAlert('Por favor complete los campos requeridos', 'error');
-            return;
+        // 3. Petición Fetch a la API
+        const respuesta = await fetch(url, {
+            method: method,
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(eventData)
+        });
+
+        if (!respuesta.ok) {
+            const errorData = await respuesta.json();
+            throw new Error(errorData.message || 'Error al guardar el evento');
         }
-        
-        if (!eventData.allDay && (!eventData.startTime || !eventData.endTime)) {
-            showAlert('Por favor ingrese la hora de inicio y fin', 'error');
-            return;
-        }
-        
-        // Determinar color según tipo
-        const typeColors = {
-            training: '#3b82f6',
-            game: '#ef4444',
-            meeting: '#8b5cf6',
-            event: '#10b981',
-            other: '#6b7280'
-        };
-        
+
+        const resultado = await respuesta.json();
+        console.log("Respuesta del servidor:", resultado);
+
+        // 4. Lógica de actualización local (solo si el servidor respondió OK)
         if (editingEventId) {
-            // Editar evento existente
             const index = events.findIndex(event => event.id === editingEventId);
             if (index !== -1) {
-                events[index] = {
-                    ...events[index],
-                    ...eventData,
-                    color: typeColors[eventData.type] || '#6b7280',
-                    id: editingEventId
-                };
+                events[index] = { ...eventData, id: editingEventId };
                 showAlert('Evento actualizado exitosamente', 'success');
             }
         } else {
-            // Crear nuevo evento
-            const newEvent = {
-                ...eventData,
-                id: events.length > 0 ? Math.max(...events.map(e => e.id)) + 1 : 1,
-                color: typeColors[eventData.type] || '#6b7280'
+            // Usamos el ID que nos devuelva el servidor si es posible
+            const newEvent = { 
+                ...eventData, 
+                id: resultado.id || (events.length > 0 ? Math.max(...events.map(e => e.id)) + 1 : 1) 
             };
             events.push(newEvent);
             showAlert('Evento creado exitosamente', 'success');
         }
-        
-        // Actualizar vistas
+
+        // Actualizar vistas y cerrar modal
         updateCalendar();
         updateEventList();
         loadWeekView();
         loadDayView();
         
-        // Cerrar modal y resetear formulario
         eventModal.classList.remove('active');
         document.body.style.overflow = 'auto';
         eventForm.reset();
         editingEventId = null;
-    });
+
+    } catch (error) {
+        console.error("Error en la petición:", error);
+        showAlert('Hubo un problema con el servidor: ' + error.message, 'error');
+    }
+});
 
     // Funciones principales
     function updateCalendar() {
@@ -341,7 +284,7 @@ document.addEventListener('DOMContentLoaded', function() {
         let firstDayIndex = firstDay.getDay(); // Domingo = 0
         
         // Ajustar para que la semana empiece en Lunes
-        firstDayIndex = firstDayIndex === 0 ? 6 : firstDayIndex - 1;
+        //firstDayIndex = firstDayIndex === 0 ? 6 : firstDayIndex - 1;
         
         // Obtener último día del mes
         const lastDate = lastDay.getDate();
@@ -377,63 +320,89 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    function createDayElement(dayNumber, isOtherMonth, year, month, isToday = false) {
-        const dayElement = document.createElement('div');
-        dayElement.className = 'calendar-day';
+  function createDayElement(dayNumber, isOtherMonth, year, month, isToday = false) {
+    const dayElement = document.createElement('div');
+    dayElement.className = 'calendar-day';
+    
+    if (isOtherMonth) {
+        dayElement.classList.add('other-month');
+    }
+    
+    if (isToday) {
+        dayElement.classList.add('today');
+    }
+    
+    // Crear string de fecha directamente (evita problemas de zona horaria)
+    const year_str = year;
+    const month_str = String(month + 1).padStart(2, '0'); // +1 porque el mes viene 0-11
+    const day_str = String(dayNumber).padStart(2, '0');
+    const dateString = `${year_str}-${month_str}-${day_str}`;
+    
+    // Verificar si hay eventos para este día
+    const dayEvents = getEventsForDate(dateString);
+    if (dayEvents.length > 0) {
+        dayElement.classList.add('has-events');
+    }
+    
+    // Número del día
+    const dayNumberElement = document.createElement('div');
+    dayNumberElement.className = 'day-number';
+    dayNumberElement.textContent = dayNumber;
+    dayElement.appendChild(dayNumberElement);
+    
+    // Eventos del día (mostrar máximo 2)
+    if (dayEvents.length > 0) {
+        const eventsContainer = document.createElement('div');
+        eventsContainer.className = 'day-events';
         
-        if (isOtherMonth) {
-            dayElement.classList.add('other-month');
-        }
+        const eventsToShow = dayEvents.slice(0, 2);
+        eventsToShow.forEach(event => {
+            const eventElement = document.createElement('div');
+            eventElement.className = `day-event ${event.type}`;
+            eventElement.textContent = event.title;
+            eventElement.title = `${event.title}\n${event.startTime || 'Todo el día'} - ${event.endTime || ''}\n${event.location || 'Sin ubicación'}`;
+            eventElement.addEventListener('click', (e) => {
+                e.stopPropagation(); // Evitar que el click se propague al día
+                viewEventDetails(event.id);
+            });
+            eventsContainer.appendChild(eventElement);
+        });
         
-        if (isToday) {
-            dayElement.classList.add('today');
-        }
-        
-        // Crear fecha completa para este día
-        const dayDate = new Date(year, month, dayNumber);
-        const dateString = dayDate.toISOString().split('T')[0];
-        
-        // Verificar si hay eventos para este día
-        const dayEvents = getEventsForDate(dateString);
-        if (dayEvents.length > 0) {
-            dayElement.classList.add('has-events');
-        }
-        
-        // Número del día
-        const dayNumberElement = document.createElement('div');
-        dayNumberElement.className = 'day-number';
-        dayNumberElement.textContent = dayNumber;
-        dayElement.appendChild(dayNumberElement);
-        
-        // Eventos del día (mostrar máximo 2)
-        if (dayEvents.length > 0) {
-            const eventsContainer = document.createElement('div');
-            eventsContainer.className = 'day-events';
+        // Mostrar indicador si hay más eventos
+        if (dayEvents.length > 2) {
+            const moreEventsElement = document.createElement('div');
+            moreEventsElement.className = 'more-events';
+            moreEventsElement.textContent = `+${dayEvents.length - 2} más`;
             
-            const eventsToShow = dayEvents.slice(0, 2);
-            eventsToShow.forEach(event => {
-                const eventElement = document.createElement('div');
-                eventElement.className = `day-event ${event.type}`;
-                eventElement.textContent = event.title;
-                eventElement.title = `${event.title}\n${event.startTime} - ${event.endTime}\n${event.location}`;
-                eventElement.addEventListener('click', () => viewEventDetails(event.id));
-                eventsContainer.appendChild(eventElement);
+            // Crear dayDate para pasarlo a showDayEvents
+            const dayDate = new Date(year, month, dayNumber);
+            moreEventsElement.addEventListener('click', (e) => {
+                e.stopPropagation(); // Evitar que el click se propague al día
+                showDayEvents(dayDate, dayEvents);
             });
             
-            // Mostrar indicador si hay más eventos
-            if (dayEvents.length > 2) {
-                const moreEventsElement = document.createElement('div');
-                moreEventsElement.className = 'more-events';
-                moreEventsElement.textContent = `+${dayEvents.length - 2} más`;
-                moreEventsElement.addEventListener('click', () => showDayEvents(dayDate, dayEvents));
-                eventsContainer.appendChild(moreEventsElement);
-            }
-            
-            dayElement.appendChild(eventsContainer);
+            eventsContainer.appendChild(moreEventsElement);
         }
         
-        return dayElement;
+        dayElement.appendChild(eventsContainer);
     }
+    
+    // Agregar evento de clic en el día para crear nuevo evento
+    dayElement.addEventListener('click', () => {
+        // Establecer la fecha en el formulario
+        eventDateInput.value = dateString;
+        // Abrir modal para nuevo evento
+        editingEventId = null;
+        document.getElementById('modalTitle').textContent = 'Nuevo Evento';
+        eventForm.reset();
+        startTimeInput.disabled = false;
+        endTimeInput.disabled = false;
+        eventModal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    });
+    
+    return dayElement;
+}
     
     function getEventsForDate(dateString) {
         // Obtener filtros activos
@@ -667,28 +636,36 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    function showDayEvents(date, dayEvents) {
-        const dateString = formatDate(date.toISOString().split('T')[0]);
-        let message = `Eventos para ${dateString}:\n\n`;
-        
-        dayEvents.forEach((event, index) => {
-            message += `${index + 1}. ${event.title}\n`;
-            message += `   Horario: ${event.startTime || 'Todo el día'}\n`;
-            message += `   Ubicación: ${event.location || 'No especificada'}\n\n`;
-        });
-        
-        alert(message);
-    }
+  function showDayEvents(date, dayEvents) {
+    // Crear fecha en formato local sin usar toISOString()
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const dateString = `${year}-${month}-${day}`;
     
-    function formatDate(dateString) {
-        const date = new Date(dateString);
-        return date.toLocaleDateString('es-ES', {
-            weekday: 'long',
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-        });
-    }
+    const formattedDate = formatDate(dateString);
+    let message = `Eventos para ${formattedDate}:\n\n`;
+    
+    dayEvents.forEach((event, index) => {
+        message += `${index + 1}. ${event.title}\n`;
+        message += `   Horario: ${event.startTime || 'Todo el día'}\n`;
+        message += `   Ubicación: ${event.location || 'No especificada'}\n\n`;
+    });
+    
+    alert(message);
+}
+    
+function formatDate(dateString) {
+    // Si dateString viene en formato YYYY-MM-DD, lo dividimos para evitar problemas de zona horaria
+    const [year, month, day] = dateString.split('-');
+    const date = new Date(year, month - 1, day); // Creamos la fecha en zona horaria local
+    return date.toLocaleDateString('es-ES', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    });
+}
     
     function getEventTypeText(type) {
         const typeMap = {

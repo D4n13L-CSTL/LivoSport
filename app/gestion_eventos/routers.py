@@ -1,47 +1,40 @@
-from flask import Blueprint, make_response, request, jsonify
+from flask import Blueprint, make_response, request, jsonify, session
 from flask_restx import Resource
 from .documentation import * 
-from . import creacion_de_eventos, obtener_eventos
+from . import creacion_de_eventos
 from flask_jwt_extended import jwt_required
 
+evento_model = api.model('Evento', {
+    'titulo': fields.String(required=True, description='Título del evento'),
+    'tipo': fields.String(required=True, description='Categoría del evento'),
+    'fecha': fields.Date(required=True, description='Fecha (YYYY-MM-DD)'),
+    'ubicacion': fields.String(required=True, description='Lugar del encuentro'),
+    'equipo': fields.String(description='Equipo participante'),
+    'descripcion': fields.String(description='Detalles adicionales'),
+    'hora_ini': fields.DateTime(required=True, description='Hora de inicio (HH:MM)'),
+    'hora_fin': fields.DateTime(required=True, description='Hora de finalización (HH:MM)'),
+    'id_club': fields.Integer(required=True, description='ID único del club')
+})
 
-@api.route('')
-class GestionarEventos(Resource):
-    @api.doc('crear_evento')
-    @api.expect(evento_payload, validate=True)
-    @api.response(200, 'Evento creado exitosamente', evento_response)
-    @api.response(500, 'Error interno del servidor', error_response)
-    @jwt_required()
+@api.route('/')
+class EventoList(Resource):
+    @api.expect(evento_model)
     def post(self):
-        """
-        Crea un nuevo evento dentro del club.
+        data = api.payload
+        creacion_de_eventos.servicio_de_creacion(data)
+        print(f"Recibido: {data['titulo']} para el club {data['id_club']}")
         
-        Requiere los datos básicos del evento: nombre, descripción, fecha, hora e id_tipo.
-        """ 
-        try:
-            data = api.payload
-            nombre = data['nombre'] 
-            descripcion = data['descripcion'] 
-            fecha = data['fecha'] 
-            hora = data['hora'] 
-            id_tipo = data['id_tipo']
-            id_de_evento = creacion_de_eventos.servicio_de_creacion(nombre, descripcion, fecha, hora, id_tipo)
-            creacion_de_eventos.servicio_relacion_evento_club(id_de_evento)
+        return {"message": "Evento guardado", "data": data}, 201
 
-            return {'Success':"Evento Registrado Exitosamente"}
-        except Exception as e:
-            return {"Error":str(e)} , 500
-        
-    @api.doc('listar_eventos')
-    @api.marshal_list_with(evento_model)
-    @api.response(500, 'Error interno del servidor', error_response)
-    @jwt_required()
+
+
+
+@api.route('/ver/')
+
+class EventoList(Resource):
     def get(self):
-        """
-        Retorna la lista de eventos asignados por un club.
-        """
-        try:
-            evento = obtener_eventos.readEventos()
-            return make_response(jsonify(evento)) , 200
-        except Exception as e:
-            return {"Error":str(e)} , 500
+        id_club = session.get('id_club')
+        eventos = creacion_de_eventos.ver_eventos(id_club)
+        print(eventos)
+        print(id_club)
+        return eventos

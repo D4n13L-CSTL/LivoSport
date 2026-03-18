@@ -87,23 +87,19 @@ CREATE TABLE tipo_eventos (
 
 -- Tabla de eventos
 CREATE TABLE eventos (
-    id_evento SERIAL PRIMARY KEY,
-    nombre VARCHAR(200) NOT NULL,
-    descripcion TEXT,
+    id SERIAL PRIMARY KEY,
+    titulo VARCHAR(200) NOT NULL,
+    tipo VARCHAR (50),
     fecha DATE NOT NULL,
-    hora TIME,
-    id_tipo INT NOT NULL,
-    FOREIGN KEY (id_tipo) REFERENCES tipo_eventos(id_tipo)
+    ubicacion VARCHAR(255),
+    equipo VARCHAR(255),
+    descripcion TEXT,
+    hora_ini TIME,
+    hora_fin TIME,
+    id_club INT NOT NULL,
+    FOREIGN KEY (id_club) REFERENCES clubes(id) ON DELETE CASCADE
 );
 
--- Tabla de relación entre clubes y eventos (N:M)
-CREATE TABLE eventos_club (
-    id_club INT NOT NULL,
-    id_evento INT NOT NULL,
-    PRIMARY KEY (id_club, id_evento),
-    FOREIGN KEY (id_club) REFERENCES clubes(id) ON DELETE CASCADE,
-    FOREIGN KEY (id_evento) REFERENCES eventos(id_evento) ON DELETE CASCADE
-);
 
 
 -----------------------------------------------------------------------------------------

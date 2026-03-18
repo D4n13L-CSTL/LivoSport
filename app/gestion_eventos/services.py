@@ -1,39 +1,31 @@
-from flask import request
-from datetime import date, time
 
-class EventosBase:
-    def __init__(self, evento):
-        self.evento  = evento
 
-class EventosServicesWrite(EventosBase):
 
-    def __init__(self, evento):
-        super().__init__(evento)
+class EventosServicesWrite:
+    def __init__(self, eventos):
+        self.eventos = eventos
 
-    def servicio_de_creacion(self, nombre, descripcion, fecha, hora, id_tipo):
-        return self.evento.crear_un_evento(nombre, descripcion, fecha, hora, id_tipo)
+    def servicio_de_creacion(self, datos):
+
+        return self.eventos.crear_un_evento(datos)
   
-    def servicio_relacion_evento_club(self, id_evento):
-        id_club = request.cookies.get("id_club_cookie")
-        return self.evento.relacion_evento_club(id_club,id_evento)
-    
 
-class EventosServicesRead(EventosBase):
-    def __init__(self, evento):
-        super().__init__(evento)
-    
-    def readEventos(self):
-        id_club = request.cookies.get("id_club_cookie")
-        rows = self.evento.obtener_eventos(id_club)
-        eventos = []
-        for row in rows:
-            eventos.append({
-                "nombre": row["nombre"],
-                "descripcion": row["descripcion"],
-                "fecha": row["fecha"].isoformat() if isinstance(row["fecha"], date) else row["fecha"],
-                "hora": row["hora"].strftime("%H:%M:%S") if isinstance(row["hora"], time) else row["hora"],
-                "tipo_evento": row["nombre"] if "tipo_evento" not in row else row["tipo_evento"]
+    def ver_eventos(self, id_club):
+        eventos = self.eventos.obtener_eventos(id_club) 
+        eventos_limpios = []
+        print(eventos[0].get('titulo'))
+        for e in eventos:
+            eventos_limpios.append({
+                "id":e.get('id'),
+                "titulo": e.get('titulo'),
+                "tipo": e.get('tipo'),
+                "fecha": str(e.get('fecha')) if e.get('fecha') else None,
+                "ubicacion": e.get('ubicacion'),
+                "equipo": e.get('equipo'),
+                "descripcion": e.get('descripcion'),
+                "hora_ini": str(e.get('hora_ini')) if e.get('hora_ini') else None,
+                "hora_fin": str(e.get('hora_fin')) if e.get('hora_fin') else None,
+                "id_club": e.get('id_club')
             })
-        
-        return eventos
-    
+            
+        return eventos_limpios 

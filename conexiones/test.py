@@ -13,7 +13,7 @@ probar_conexion()
 def a():
     c = conexion_db()
     cur = c.cursor()
-    query = cur.execute('select * from pagos')
+    query = cur.execute('select * from eventos')
     
     columns = [i[0] for i in cur.description]
     return columns
