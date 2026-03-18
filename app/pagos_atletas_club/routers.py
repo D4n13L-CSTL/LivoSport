@@ -1,6 +1,6 @@
 from flask_restx import Resource
 from .documentation import *
-from flask import make_response, jsonify, request
+from flask import make_response, jsonify, request, session
 from flask_jwt_extended import jwt_required
 from . import service_pago
 
@@ -41,8 +41,8 @@ class RoutePagos(Resource):
 class PagosGenerales(Resource):
     
     def get(self):
-
-        pagos = service_pago.pagos_genarales()
+        id_club = session.get('id_club')
+        pagos = service_pago.pagos_genarales(id_club)
         return make_response(jsonify(pagos))
 
     def put(self):

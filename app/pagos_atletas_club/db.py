@@ -51,10 +51,11 @@ class VerPagos(BaseDAO):
         return self.fetch_all(query, (id_atleta,))
     
 
-    def pagos_generales(self):
+    def pagos_generales(self, id_club):
         query = """
                 select a.nombre,a.apellido,p.id ,ph.comentario, p.fecha_pago , p.monto, p.metodo, p.estado, p.concepto , p.referencia from pagos p 
                 join pagos_historial ph on ph.id_pago = p.id
                 join atletas a on a.id = p.id_atleta
+				where p.id_club = %s
                 """
-        return self.fetch_all(query)
+        return self.fetch_all(query,(id_club,))

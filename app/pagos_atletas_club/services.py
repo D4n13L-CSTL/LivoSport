@@ -25,8 +25,8 @@ class ServiceRegistrarPago:
     
 
     
-    def pagos_genarales(self):
-        return self.get_pagos_dao.pagos_generales()
+    def pagos_genarales(self,id_club):
+        return self.get_pagos_dao.pagos_generales(id_club)
     
 
 

@@ -76,7 +76,7 @@ class ServicesObtenerAtletas:
     def __init__(self, atletas):
         self.atletas = atletas
 
-    def ver_atletas(self):
+    def ver_atletas(self,id_club):
         
-        return self.atletas.atletas_generales()
+        return self.atletas.atletas_generales(id_club)
         

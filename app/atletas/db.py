@@ -141,13 +141,15 @@ class RegistraAtleta(WriteDAO):
 
 class ObtenerAtletas(BaseDAO):
 
-    def atletas_generales(self):
+    def atletas_generales(self,id_club):
         query = """
             Select * from atletas a 
             join usuarios on  a.id_usuario = usuarios.id
             join info_depot_atleta on info_depot_atleta.id_atleta = a.id
             join historial_medico on historial_medico.id_atleta = a.id
+			join club_atleta on club_atleta.id_atleta = a.id
             where a.is_player = true
+			and club_atleta.id_club = %s
         """
-        return self.fetch_all(query)
+        return self.fetch_all(query,(id_club,))
     

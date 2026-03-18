@@ -1,4 +1,4 @@
-from flask import Blueprint, request, make_response, jsonify
+from flask import Blueprint, request, make_response, jsonify, session
 from flask_jwt_extended import decode_token, jwt_required
 from flask_restx import  Resource
 from .documentation import * 
@@ -138,5 +138,5 @@ class CrudRegistroAtleta(Resource):
 @api.route('/obtener_atletas')
 class ObtenerAtletas(Resource):
     def get(self):
-
-        return make_response(jsonify(atleta_get.ver_atletas()))
+        id_club = session.get('id_club')
+        return make_response(jsonify(atleta_get.ver_atletas(id_club)))
