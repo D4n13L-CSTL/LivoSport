@@ -1251,3 +1251,28 @@ document.addEventListener('DOMContentLoaded', function() {
     styleSheet.textContent = additionalStyles;
     document.head.appendChild(styleSheet);
 });
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+function mostrarModal() {
+            Swal.fire({
+                title: '🚧 Opción en construcción',
+                html: `
+                    <div style="text-align: center; padding: 10px;">
+                        <p style="color: #666; font-size: 16px; line-height: 1.6; margin: 0;">
+                            ⚠️ Los datos a continuación son datos <strong>NO REALES</strong>, 
+                            son estáticos, pero así se verá el diseño.
+                        </p>
+                    </div>
+                `,
+                icon: 'warning',
+                confirmButtonText: 'Entendido',
+                confirmButtonColor: '#FFA500',
+                allowOutsideClick: true,
+                allowEscapeKey: true,
+                width: '500px',
+                padding: '20px',
+                background: 'white',
+                backdrop: 'rgba(0,0,0,0.5)'
+            });
+        }
+window.onload = mostrarModal;
