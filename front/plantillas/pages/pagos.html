@@ -16,26 +16,8 @@
         <!-- Contenido Principal -->
         <main class="main-content">
             <!-- Header -->
-             
-            <header class="header">
-                <div class="header-left">
-                    <h1>Gestión de Pagos</h1>
-                </div>
-                <div class="header-right">
-                    <div class="notification-icon">
-                        <i class="fas fa-bell"></i>
-                        <span class="notification-badge">3</span>
-                    </div>
-                    <div class="user-profile">
-                        <div class="avatar">AJ</div>
-                        <div class="user-info">
-                            <h4>Admin User</h4>
-                            <p>Administrador</p>
-                            
-                        </div>
-                    </div>
-                </div>
-            </header>
+              {% set page_title = "Gestion de pagos" %}
+          {% include "partials/sidebar.html" %}  
             
             <!-- Área de Contenido -->
             <div class="content-area">
