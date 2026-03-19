@@ -40,6 +40,7 @@ class Login(Resource):
 
                         if  session['tipo_user'] == 'club':
                             session['id_club'] = validar.get('id_club')
+                            session['username_club'] = validar.get('username')
                             return res
                         
                         else:

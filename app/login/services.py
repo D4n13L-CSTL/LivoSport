@@ -13,12 +13,13 @@ class LoginAuth:
         tipo_user = [i.get('nombre') for i in user]
         cedula = [i.get('n_documento') for i in user]
         id_club = [i.get('id_club') for i in user]
+        username_club = [i.get('username') for i in user]
         print(tipo_user)
         stored_password = user[0]['password'].encode('utf-8')
 
         if bcrypt.checkpw(password.encode('utf-8'), stored_password):
         
-            resp = {"Auth": True, "tipo_user":tipo_user[0], "cedula":cedula[0], "id_club":id_club[0]}
+            resp = {"Auth": True, "tipo_user":tipo_user[0], "cedula":cedula[0], "id_club":id_club[0], "username":username_club}
             
             return resp
         

@@ -3,7 +3,8 @@ async function fetchAndMapEventos() {
     try {
         const respuesta = await fetch(url);
         const datosOriginales = await respuesta.json();
-
+        renderUpcomingEvents(datosOriginales)
+        renderCalendarStats(datosOriginales)
         // IMPORTANTE: Mira en la consola cómo se llaman las llaves que vienen del servidor
         console.log("Datos crudos del servidor:", datosOriginales);
 
@@ -821,3 +822,98 @@ function formatDate(dateString) {
     `;
     document.head.appendChild(style);
 });
+
+function renderUpcomingEvents(eventos) {
+    const container = document.querySelector('.upcoming-list');
+    
+    // Limpiamos el contenedor por si hay datos estáticos previos
+    container.innerHTML = '';
+
+    // Opcional: Ordenar por fecha antes de mostrar
+    eventos.sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
+
+    eventos.forEach(evento => {
+        // 1. Procesar la fecha (YYYY-MM-DD)
+        const fechaObj = new Date(evento.fecha + 'T00:00:00'); // Forzamos hora local
+        const dia = fechaObj.getDate();
+        const mes = fechaObj.toLocaleString('es-ES', { month: 'short' }).replace('.', '');
+
+        // 2. Formatear la hora (quitar los segundos :00 del final)
+        const horaIni = evento.hora_ini.substring(0, 5);
+        const horaFin = evento.hora_fin.substring(0, 5);
+        const horario = (horaIni === "00:00" && horaFin === "00:00") ? "Todo el día" : `${horaIni} - ${horaFin}`;
+
+        // 3. Crear el template HTML
+        const eventHTML = `
+            <div class="upcoming-event ${evento.tipo}">
+                <div class="event-date">
+                    <span class="event-day">${dia}</span>
+                    <span class="event-month">${mes.charAt(0).toUpperCase() + mes.slice(1)}</span>
+                </div>
+                <div class="event-info">
+                    <h4>${evento.titulo}</h4>
+                    <p class="event-time">${horario}</p>
+                    <p class="event-location">${evento.ubicacion}</p>
+                </div>
+            </div>
+        `;
+
+        // 4. Inyectar en el contenedor
+        container.innerHTML += eventHTML;
+    });
+}
+
+function renderCalendarStats(eventos) {
+    const statsContainer = document.querySelector('.calendar-stats');
+    
+    // 1. Contadores iniciales
+    let entrenamientos = 0;
+    let juegos = 0;
+    let eventosEspeciales = 0;
+    const diasOcupadosSet = new Set(); // Usamos Set para contar días únicos
+
+    // 2. Obtener el mes actual para filtrar (opcional, si solo quieres estadísticas del mes en curso)
+    const mesActual = new Date().getMonth();
+    const anioActual = new Date().getFullYear();
+
+    // 3. Procesar datos
+    eventos.forEach(evento => {
+        const fechaObj = new Date(evento.fecha + 'T00:00:00');
+        
+        // Filtramos para contar solo los del mes/año actual
+        if (fechaObj.getMonth() === mesActual && fechaObj.getFullYear() === anioActual) {
+            
+            // Contar por tipo (usando los strings que vienen de tu backend)
+            if (evento.tipo === 'training') entrenamientos++;
+            else if (evento.tipo === 'game') juegos++;
+            else if (evento.tipo === 'event') eventosEspeciales++;
+
+            // Registrar el día como ocupado
+            diasOcupadosSet.add(evento.fecha);
+        }
+    });
+
+    // 4. Calcular días totales del mes actual
+    const diasEnElMes = new Date(anioActual, mesActual + 1, 0).getDate();
+
+    // 5. Generar el HTML
+    statsContainer.innerHTML = `
+        <h3>Estadísticas del Mes</h3>
+        <div class="stat-item">
+            <span>Entrenamientos:</span>
+            <strong>${entrenamientos}</strong>
+        </div>
+        <div class="stat-item">
+            <span>Juegos:</span>
+            <strong>${juegos}</strong>
+        </div>
+        <div class="stat-item">
+            <span>Eventos:</span>
+            <strong>${eventosEspeciales}</strong>
+        </div>
+        <div class="stat-item">
+            <span>Días ocupados:</span>
+            <strong>${diasOcupadosSet.size}/${diasEnElMes}</strong>
+        </div>
+    `;
+}

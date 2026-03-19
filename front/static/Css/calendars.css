@@ -636,3 +636,27 @@
         font-size: 0.9rem;
     }
 }
+
+.upcoming-list {
+    max-height: 400px;    /* Ajusta esta altura según tu diseño */
+    overflow-y: auto;     /* Activa el scroll vertical solo si es necesario */
+    padding-right: 10px;  /* Espacio para que el scroll no tape el texto */
+    
+    /* Personalización del scrollbar (opcional, para que se vea moderno) */
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e1 transparent;
+}
+
+/* Estilo para navegadores Chrome/Safari/Edge */
+.upcoming-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.upcoming-list::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.upcoming-list::-webkit-scrollbar-thumb {
+    background-color: #cbd5e1;
+    border-radius: 20px;
+}

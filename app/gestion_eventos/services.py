@@ -13,7 +13,7 @@ class EventosServicesWrite:
     def ver_eventos(self, id_club):
         eventos = self.eventos.obtener_eventos(id_club) 
         eventos_limpios = []
-        print(eventos[0].get('titulo'))
+       
         for e in eventos:
             eventos_limpios.append({
                 "id":e.get('id'),

@@ -22,7 +22,9 @@ def render_index():
     if "usuario" not in session:
         return redirect(url_for('Renders.render_login'))
     print(session['tipo_user'])
-    return make_response(render_template('dashboard.html'), 200)
+    nombre_club = session.get('username_club')
+    print(nombre_club)
+    return make_response(render_template('dashboard.html', nombre_club = nombre_club[0]), 200)
 
 
 
