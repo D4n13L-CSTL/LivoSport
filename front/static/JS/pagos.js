@@ -55,10 +55,21 @@ document.addEventListener('DOMContentLoaded', async function() {
         allowInput: true
     });
 
+    function renderCurrentView() {
+        const isMobile = window.innerWidth <= 768;
+        
+        if (isMobile) {
+            renderMobileCards(samplePayments);
+        } else {
+            loadPayments(samplePayments);
+        }
+    }
+
+
     // Cargar datos iniciales
     loadPayments(samplePayments);
     updateStats(samplePayments);
-
+    renderCurrentView()
     // Abrir modal de nuevo pago
 
 
@@ -226,6 +237,100 @@ document.addEventListener('DOMContentLoaded', async function() {
             paymentsTableBody.appendChild(row);
         });
     }
+
+    function renderMobileCards(payments) {
+        if (!mobilePaymentsList) return;
+        
+        
+        
+        if (payments.length === 0) {
+            mobilePaymentsList.innerHTML = `
+                <div style="text-align: center; padding: 2rem;">
+                    <i class="fas fa-inbox" style="font-size: 2rem; color: #94a3b8;"></i>
+                    <p style="margin-top: 0.5rem; color: #6b7280;">No se encontraron pagos</p>
+                </div>
+            `;
+            return;
+        }
+        
+        mobilePaymentsList.innerHTML = payments.map(payment => {
+            let statusColor, statusText;
+            switch(payment.status) {
+                case 'aprobado':
+                case 'pagado':
+                case 'paid':
+                    statusColor = '#10b981';
+                    statusText = 'Aprobado';
+                    break;
+                case 'pendiente':
+                    statusColor = '#f59e0b';
+                    statusText = 'Pendiente';
+                    break;
+                case 'atrasado':
+                    statusColor = '#ef4444';
+                    statusText = 'Atrasado';
+                    break;
+                default:
+                    statusColor = '#6b7280';
+                    statusText = 'Pendiente';
+            }
+            
+            return `
+                <div class="payment-card">
+                    <div class="payment-card-header">
+                        <div class="payment-card-title">
+                            <strong>${payment.athlete}</strong>
+                            <div style="font-size: 0.75rem; color: #6b7280; margin-top: 0.25rem;">ID: #${payment.id.toString().padStart(3, '0')}</div>
+                        </div>
+                        <div class="payment-card-badge" style="background: ${statusColor}20; color: ${statusColor}">
+                            ${statusText}
+                        </div>
+                    </div>
+                    <div class="payment-card-row">
+                        <span class="payment-card-label">Concepto:</span>
+                        <span class="payment-card-value">${payment.concept}</span>
+                    </div>
+                    <div class="payment-card-row">
+                        <span class="payment-card-label">Fecha Vencimiento:</span>
+                        <span class="payment-card-value">${formatDate(payment.dueDate)}</span>
+                    </div>
+                    ${payment.paymentDate ? `
+                    <div class="payment-card-row">
+                        <span class="payment-card-label">Fecha Pago:</span>
+                        <span class="payment-card-value">${formatDate(payment.paymentDate)}</span>
+                    </div>
+                    ` : ''}
+                    <div class="payment-card-row">
+                        <span class="payment-card-label">Monto:</span>
+                        <span class="payment-card-value"><strong>$${payment.amount}</strong></span>
+                    </div>
+                    <div class="payment-card-row">
+                        <span class="payment-card-label">Método:</span>
+                        <span class="payment-card-value">${payment.method || '-'}</span>
+                    </div>
+                    ${payment.referencia ? `
+                    <div class="payment-card-row">
+                        <span class="payment-card-label">Referencia:</span>
+                        <span class="payment-card-value">${payment.referencia}</span>
+                    </div>
+                    ` : ''}
+                    <div class="payment-card-actions">
+                        <button onclick="window.viewPayment(${payment.id})">
+                            <i class="fas fa-eye"></i> Ver
+                        </button>
+                        <button onclick="window.editPayment(${payment.id})">
+                            <i class="fas fa-edit"></i> Editar
+                        </button>
+                        <button onclick="window.deletePayment(${payment.id})">
+                            <i class="fas fa-trash"></i> Eliminar
+                        </button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+        
+    }
+
 
     function applyFilters() {
         let filteredPayments = [...samplePayments];

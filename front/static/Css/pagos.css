@@ -1,0 +1,447 @@
+:root {
+    --primary-color: #3b82f6;
+    --success-color: #10b981;
+    --warning-color: #f59e0b;
+    --danger-color: #ef4444;
+    --text-primary: #1f2937;
+    --text-secondary: #6b7280;
+    --border-color: #e5e7eb;
+    --bg-white: #ffffff;
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+}
+
+/* Estilos responsive para la sección de estadísticas */
+.stats-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.stat-card {
+    background: var(--bg-white);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.stat-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: white;
+}
+
+.stat-info h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0 0 0.25rem 0;
+    color: var(--text-primary);
+}
+
+.stat-info p {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+/* Estilos responsive para filtros */
+.filters-section {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: flex-end;
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background: var(--bg-white);
+    border-radius: 0.75rem;
+}
+
+.filter-group {
+    flex: 1;
+    min-width: 150px;
+}
+
+.filter-group label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+}
+
+.filter-select,
+.search-input input {
+    width: 100%;
+    padding: 0.625rem;
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    transition: border-color 0.2s;
+}
+
+.filter-select:focus,
+.search-input input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.search-input {
+    position: relative;
+}
+
+.search-input i {
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+}
+
+.search-input input {
+    padding-left: 2rem;
+}
+
+.btn-secondary {
+    padding: 0.625rem 1.25rem;
+    background: var(--bg-white);
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.btn-secondary:hover {
+    background: #f9fafb;
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+/* Estilos para tabla y su versión responsive */
+.table-container {
+    background: var(--bg-white);
+    border-radius: 0.75rem;
+    overflow-x: auto;
+    box-shadow: var(--shadow-sm);
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 800px;
+}
+
+.data-table thead {
+    background: #f9fafb;
+    border-bottom: 2px solid var(--border-color);
+}
+
+.data-table th {
+    padding: 1rem;
+    text-align: left;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.data-table td {
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 0.875rem;
+    color: var(--text-primary);
+}
+
+/* Versión móvil: Tarjetas */
+.mobile-payments-list {
+    display: none;
+    padding: 1rem;
+}
+
+.payment-card {
+    background: var(--bg-white);
+    border: 1px solid var(--border-color);
+    border-radius: 0.75rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    transition: all 0.2s;
+}
+
+.payment-card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+}
+
+.payment-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.payment-card-title {
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 1rem;
+}
+
+.payment-card-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 1rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.payment-card-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    font-size: 0.875rem;
+}
+
+.payment-card-label {
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.payment-card-value {
+    color: var(--text-primary);
+    text-align: right;
+}
+
+.payment-card-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.payment-card-actions button {
+    flex: 1;
+    padding: 0.5rem;
+    background: #f9fafb;
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.payment-card-actions button:hover {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+/* Paginación responsive */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 1.5rem;
+    padding: 1rem;
+    flex-wrap: wrap;
+}
+
+.pagination-btn {
+    padding: 0.5rem 1rem;
+    background: var(--bg-white);
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.875rem;
+}
+
+.pagination-btn:hover:not(:disabled) {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+.pagination-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.page-numbers {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.page-number {
+    padding: 0.5rem 0.75rem;
+    background: var(--bg-white);
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.875rem;
+}
+
+.page-number:hover {
+    background: #f9fafb;
+    border-color: var(--primary-color);
+}
+
+.page-number.active {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+/* Media Queries para dispositivos móviles */
+@media (max-width: 768px) {
+    /* Ajustes generales */
+    .content-area {
+        padding: 1rem;
+    }
+    
+    /* Estadísticas en móvil */
+    .stats-row {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .stat-card {
+        padding: 1rem;
+    }
+    
+    .stat-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 1.25rem;
+    }
+    
+    .stat-info h3 {
+        font-size: 1.25rem;
+    }
+    
+    /* Filtros en móvil */
+    .filters-section {
+        flex-direction: column;
+        gap: 0.75rem;
+        padding: 1rem;
+    }
+    
+    .filter-group {
+        width: 100%;
+        min-width: auto;
+    }
+    
+    .filter-group-search {
+        width: 100%;
+    }
+    
+    .btn-secondary {
+        width: 100%;
+        white-space: normal;
+    }
+    
+    /* Ocultar tabla en móvil y mostrar tarjetas */
+    .data-table {
+        display: none;
+    }
+    
+    .mobile-payments-list {
+        display: block;
+    }
+    
+    /* Paginación en móvil */
+    .pagination {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    
+    .page-numbers {
+        order: -1;
+    }
+    
+    .pagination-btn {
+        width: 100%;
+        text-align: center;
+    }
+}
+
+/* Tablet (entre 769px y 1024px) */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .stats-row {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .filters-section {
+        flex-wrap: wrap;
+    }
+    
+    .filter-group {
+        min-width: calc(50% - 1rem);
+    }
+    
+    .btn-secondary {
+        min-width: auto;
+    }
+    
+    /* En tablet, mostrar tabla con scroll horizontal */
+    .data-table {
+        display: table;
+        min-width: 700px;
+    }
+    
+    .mobile-payments-list {
+        display: none;
+    }
+}
+
+/* Mejoras para pantallas muy pequeñas */
+@media (max-width: 480px) {
+    .content-area {
+        padding: 0.75rem;
+    }
+    
+    .stat-card {
+        flex-direction: column;
+        text-align: center;
+        gap: 0.75rem;
+    }
+    
+    .stat-info h3 {
+        font-size: 1.125rem;
+    }
+    
+    .stat-info p {
+        font-size: 0.75rem;
+    }
+    
+    .payment-card-row {
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+    
+    .payment-card-value {
+        text-align: left;
+    }
+}
