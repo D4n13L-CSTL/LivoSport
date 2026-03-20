@@ -1,7 +1,7 @@
-from adaptadores import conexion_db
+from adaptadores import conexion_db, conexion_dbp, conexion
 
 def probar_conexion():
-    conn = conexion_db()
+    conn = conexion()
     if conn:
         print("Conexión exitosa a la base de datos.")
         conn.close()
@@ -9,6 +9,9 @@ def probar_conexion():
         print(" No se pudo conectar a la base de datos.")
 
 probar_conexion()
+
+
+
 
 def a():
     c = conexion_db()
@@ -18,6 +21,3 @@ def a():
     columns = [i[0] for i in cur.description]
     return columns
 
-
-s = a()
-print(s)

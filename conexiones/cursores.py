@@ -1,11 +1,11 @@
 from contextlib import contextmanager
-from conexiones.adaptadores import conexion_db
+from conexiones.adaptadores import conexion
 
 
 
 @contextmanager
 def get_cursor():
-    conex = conexion_db()
+    conex = conexion()
     cursor = conex.cursor()
     try:
         yield cursor
