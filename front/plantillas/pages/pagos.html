@@ -6,6 +6,7 @@
     <title>Gestión de Pagos - Club de Voleibol</title>
     <link rel="stylesheet" href="../../static/Css/components.css">
     <link rel="stylesheet" href="../../static/Css/style.css">
+    <link rel="stylesheet" href="../../static/Css/pagos.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
@@ -15,130 +16,131 @@
         
         <!-- Contenido Principal -->
         <main class="main-content">
-            <!-- Header -->
-              {% set page_title = "Gestion de Pagos" %}
-          {% include "partials/sidebar.html" %}  
+    <!-- Header -->
+    {% set page_title = "Gestion de Pagos" %}
+    {% include "partials/sidebar.html" %}  
+    
+    <!-- Área de Contenido -->
+    <div class="content-area">
+        <!-- Sección de Estadísticas -->
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="stat-icon" style="background-color: #10b981;">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="stat-pagado">$0</h3>
+                    <p>Pagado este mes</p>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon" style="background-color: #8b5cf6;">
+                    <i class="fas fa-user-check"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="stat-aldia">0</h3>
+                    <p>Al día con pagos</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Panel Principal de Pagos -->
+        <div class="content-panel">
+            <div class="panel-header">
+                <h2>Registro de Pagos</h2>
+            </div>
             
-            <!-- Área de Contenido -->
-            <div class="content-area">
-                <!-- Sección de Estadísticas -->
-                <div class="stats-row">
-                        <div class="stat-card">
-                            <div class="stat-icon" style="background-color: #10b981;">
-                                <i class="fas fa-check-circle"></i>
-                            </div>
-                            <div class="stat-info">
-                                <h3 id="stat-pagado">$0</h3>
-                                <p>Pagado este mes</p>
-                            </div>
-                        </div>
-
-
-
-                        <div class="stat-card">
-                            <div class="stat-icon" style="background-color: #8b5cf6;">
-                                <i class="fas fa-user-check"></i>
-                            </div>
-                            <div class="stat-info">
-                                <h3 id="stat-aldia">0</h3>
-                                <p>Al día con pagos</p>
-                            </div>
-                        </div>
-                    </div>
+            <!-- Filtros -->
+            <div class="filters-section">
+                <div class="filter-group">
+                    <label for="filterStatus">Estado:</label>
+                    <select id="filterStatus" class="filter-select">
+                        <option value="all">Todos</option>
+                        <option value="pagado">Pagado</option>
+                        <option value="pendiente">Pendiente</option>
+                        <option value="atrasado">Atrasado</option>
+                    </select>
+                </div>
                 
-                <!-- Panel Principal de Pagos -->
-                <div class="content-panel">
-                    <div class="panel-header">
-                        <h2>Registro de Pagos</h2>
-                        
-                    </div>
-                    
-                    <!-- Filtros -->
-                    <div class="filters-section">
-                        <div class="filter-group">
-                            <label for="filterStatus">Estado:</label>
-                            <select id="filterStatus" class="filter-select">
-                                <option value="all">Todos</option>
-                                <option value="pagado">Pagado</option>
-                                <option value="pendiente">Pendiente</option>
-                                <option value="atrasado">Atrasado</option>
-                            </select>
-                        </div>
-                        
-                        <div class="filter-group">
-                            <label for="filterMonth">Mes:</label>
-                            <select id="filterMonth" class="filter-select">
-                                <option value="all">Todos los meses</option>
-                                <option value="1">Enero</option>
-                                <option value="2">Febrero</option>
-                                <option value="3">Marzo</option>
-                                <option value="4">Abril</option>
-                                <option value="5">Mayo</option>
-                                <option value="6">Junio</option>
-                                <option value="7">Julio</option>
-                                <option value="8">Agosto</option>
-                                <option value="9">Septiembre</option>
-                                <option value="10">Octubre</option>
-                                <option value="11">Noviembre</option>
-                                <option value="12">Diciembre</option>
-                            </select>
-                        </div>
-                        
-                        <div class="filter-group">
-                            <label for="searchPayment">Buscar:</label>
-                            <div class="search-input">
-                                <i class="fas fa-search"></i>
-                                <input type="text" id="searchPayment" placeholder="Buscar por atleta...">
-                            </div>
-                        </div>
-                        
-                        <button class="btn-secondary" id="resetFilters">
-                            <i class="fas fa-redo"></i> Restablecer
-                        </button>
-                    </div>
-                    
-                    <!-- Tabla de Pagos -->
-                    <div class="table-container">
-                        <table class="data-table">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Atleta</th>
-                                    <th>Concepto</th>
-                                    <th>Fecha Vencimiento</th>
-                                    <th>Fecha Pago</th>
-                                    <th>Monto</th>
-                                    <th>Método</th>
-                                    <th>Estado</th>
-                                    <th>Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody id="paymentsTableBody">
-                                <!-- Los datos se cargarán con JavaScript -->
-                            </tbody>
-                        </table>
-                    </div>
-                    
-                    <!-- Paginación -->
-                    <div class="pagination">
-                        <button class="pagination-btn" id="prevPage" disabled>
-                            <i class="fas fa-chevron-left"></i> Anterior
-                        </button>
-                        <div class="page-numbers">
-                            <span class="page-number active">1</span>
-                            <span class="page-number">2</span>
-                            <span class="page-number">3</span>
-                        </div>
-                        <button class="pagination-btn" id="nextPage">
-                            Siguiente <i class="fas fa-chevron-right"></i>
-                        </button>
+                <div class="filter-group">
+                    <label for="filterMonth">Mes:</label>
+                    <select id="filterMonth" class="filter-select">
+                        <option value="all">Todos los meses</option>
+                        <option value="1">Enero</option>
+                        <option value="2">Febrero</option>
+                        <option value="3">Marzo</option>
+                        <option value="4">Abril</option>
+                        <option value="5">Mayo</option>
+                        <option value="6">Junio</option>
+                        <option value="7">Julio</option>
+                        <option value="8">Agosto</option>
+                        <option value="9">Septiembre</option>
+                        <option value="10">Octubre</option>
+                        <option value="11">Noviembre</option>
+                        <option value="12">Diciembre</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group filter-group-search">
+                    <label for="searchPayment">Buscar:</label>
+                    <div class="search-input">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="searchPayment" placeholder="Buscar por atleta...">
                     </div>
                 </div>
                 
-                <!-- Panel de Resumen -->
-
+                <button class="btn-secondary" id="resetFilters">
+                    <i class="fas fa-redo"></i> Restablecer
+                </button>
             </div>
-        </main>
+            
+            <!-- Tabla de Pagos -->
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Atleta</th>
+                            <th>Concepto</th>
+                            <th>Fecha Vencimiento</th>
+                            <th>Fecha Pago</th>
+                            <th>Monto</th>
+                            <th>Método</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="paymentsTableBody">
+                        <!-- Los datos se cargarán con JavaScript -->
+                    </tbody>
+                </table>
+                
+                <!-- Versión móvil: Tarjetas de pagos -->
+                <div class="mobile-payments-list" id="mobilePaymentsList">
+                    <!-- Los datos se mostrarán como tarjetas en móvil -->
+                </div>
+            </div>
+            
+            <!-- Paginación -->
+            <div class="pagination">
+                <button class="pagination-btn" id="prevPage" disabled>
+                    <i class="fas fa-chevron-left"></i> Anterior
+                </button>
+                <div class="page-numbers">
+                    <span class="page-number active">1</span>
+                    <span class="page-number">2</span>
+                    <span class="page-number">3</span>
+                </div>
+                <button class="pagination-btn" id="nextPage">
+                    Siguiente <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Panel de Resumen -->
+    </div>
+</main>
     </div>
     
     <!-- Modal para Nuevo Pago -->
@@ -237,5 +239,8 @@
     <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
     <script src="../../static/JS/dashboard.js"></script>
     <script src="../../static/JS/pagos.js"></script>
+    <script>
+        
+    </script>
 </body>
 </html>
