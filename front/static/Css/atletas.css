@@ -1,18 +1,41 @@
 /* Estilos específicos para la página de atletas */
 .stats-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 1.5rem;
-    margin-bottom: 2rem;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+@media (min-width: 576px) {
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 992px) {
+    .stats-grid {
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
 }
 
 .content-panel {
     background-color: white;
     border-radius: var(--border-radius);
-    padding: 1.5rem;
+    padding: 1rem;
     box-shadow: var(--box-shadow);
-    margin-bottom: 2rem;
-    grid-column: 1 / span 2;
+    margin-bottom: 1.5rem;
+    min-width: 0;
+    max-width: 100%;
+}
+
+@media (min-width: 1025px) {
+    .content-panel {
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        grid-column: 1 / span 2;
+    }
 }
 
 .side-panel {
@@ -274,7 +297,9 @@
 
 /* Modal ampliado */
 .modal-content.wide {
+    width: 95%;
     max-width: 800px;
+    margin: 1rem auto;
 }
 
 .form-tabs {
@@ -282,6 +307,7 @@
     border-bottom: 1px solid var(--gray-light);
     margin-bottom: 1.5rem;
     overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
 .form-tabs::-webkit-scrollbar {
@@ -294,7 +320,7 @@
 }
 
 .form-tab {
-    padding: 0.75rem 1.5rem;
+    padding: 0.75rem 1rem;
     background: none;
     border: none;
     border-bottom: 3px solid transparent;
@@ -303,6 +329,13 @@
     cursor: pointer;
     white-space: nowrap;
     transition: all 0.2s;
+    min-width: fit-content;
+}
+
+@media (min-width: 769px) {
+    .form-tab {
+        padding: 0.75rem 1.5rem;
+    }
 }
 
 .form-tab:hover {
@@ -376,11 +409,22 @@
 /* Perfil de atleta */
 .profile-header {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 1.5rem;
-    margin-bottom: 2rem;
+    text-align: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
     padding-bottom: 1.5rem;
     border-bottom: 1px solid var(--gray-light);
+}
+
+@media (min-width: 769px) {
+    .profile-header {
+        flex-direction: row;
+        text-align: left;
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
 }
 
 .profile-avatar {
@@ -409,8 +453,17 @@
 
 .profile-stats {
     display: flex;
-    gap: 1.5rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem;
     margin-top: 1rem;
+}
+
+@media (min-width: 769px) {
+    .profile-stats {
+        justify-content: flex-start;
+        gap: 1.5rem;
+    }
 }
 
 .profile-stat {
@@ -433,6 +486,8 @@
     display: flex;
     border-bottom: 1px solid var(--gray-light);
     margin-bottom: 1.5rem;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
 .profile-tab {
@@ -469,8 +524,14 @@
 
 .info-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-template-columns: 1fr;
     gap: 1rem;
+}
+
+@media (min-width: 481px) {
+    .info-grid {
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    }
 }
 
 .info-item {
@@ -502,60 +563,25 @@
     margin-bottom: 0.5rem;
 }
 
-/* Responsive */
-@media (max-width: 1200px) {
-    .content-area {
-        grid-template-columns: 1fr;
-    }
-    
-    .content-panel {
-        grid-column: 1;
-    }
-    
+/* The legacy min-width specific rules have been adapted to mobile-first media queries inline. */
+@media (min-width: 1025px) {
     .side-panel {
-        order: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+}
+
+@media (max-width: 1024px) {
+    .side-panel {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
         gap: 1.5rem;
     }
 }
 
-@media (max-width: 768px) {
-    .profile-header {
-        flex-direction: column;
-        text-align: center;
-    }
-    
-    .profile-stats {
-        justify-content: center;
-    }
-    
-    .form-tabs {
-        flex-wrap: wrap;
-    }
-    
-    .form-tab {
-        flex: 1;
-        min-width: 120px;
-        text-align: center;
-    }
-    
-    .modal-content.wide {
-        width: 95%;
-        margin: 1rem;
-    }
-}
-
 @media (max-width: 480px) {
-    .stats-grid {
-        grid-template-columns: 1fr;
-    }
-    
     .side-panel {
-        grid-template-columns: 1fr;
-    }
-    
-    .info-grid {
         grid-template-columns: 1fr;
     }
 }
